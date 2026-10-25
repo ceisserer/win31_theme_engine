@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Packages a Retheme16 release with Win16Setup (external/win16setup).
 
-  mkrelease.py [--version X.Y.Z] [--out build/release]
+  mkrelease.py [--version X.Y.Z[-SUFFIX]] [--out build/release]
 
 Needs `make win16` and `make preview` first (`make release` does all).
 Stages the installation files (programs, README.TXT, themes with preview
@@ -13,6 +13,9 @@ packer write to the output directory:
   retheme16-X.Y.Z-disk.img     1.44 MB floppy image with the same files
   SHA256SUMS
   RELEASE_NOTES.md             the CHANGELOG.md section of the version
+
+--version must be the version in VERSION, optionally with a suffix for
+builds between releases (CI snapshots: X.Y.Z-snapshot.<commit>).
 
 The ZIP and the floppy image are reproducible: file dates come from
 SOURCE_DATE_EPOCH (default: the time of the last git commit).
@@ -84,13 +87,13 @@ def release_notes(version, path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--version")
+    ap.add_argument("--version", help="VERSION, or VERSION-SUFFIX for a snapshot")
     ap.add_argument("--out", default=os.path.join(ROOT, "build", "release"))
     a = ap.parse_args()
     with open(os.path.join(ROOT, "VERSION")) as f:
         file_version = f.read().strip()
     version = a.version or file_version
-    if version != file_version:
+    if version != file_version and not version.startswith(file_version + "-"):
         sys.exit("version %s does not match VERSION (%s)" % (version, file_version))
     if not os.path.exists(PACK):
         sys.exit("external/win16setup is empty: git submodule update --init")

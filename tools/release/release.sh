@@ -9,7 +9,7 @@
 #   3. with --emu: installs, reboots and removes in QEMU from the floppy image
 #      (tools/emu/test_setup.py; BASE-IMG from tools/emu/mkwin31.py)
 #   4. creates the annotated tag vX.Y.Z; with --push pushes it, and the
-#      release workflow (.github/workflows/release.yml) builds the same
+#      release job of .github/workflows/build.yml builds the same
 #      files on GitHub and publishes the release
 #
 # To prepare a release: set VERSION, add a "## X.Y.Z" section to

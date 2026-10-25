@@ -59,8 +59,8 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Loader `RETHEME.EXE`, test program `GALLERY.EXE` | `loader/`, `testapp/` | Windows |
 | Emulator tooling: DOS disk builder, unattended Windows 3.1 install (any language), debug-kernel image, VBE SVGA image, scripted runs, golden comparison | `tools/emu/` | used for all Windows tests |
 | Installer: [Win16Setup](https://github.com/ceisserer/Win16Setup) (submodule; blue setup screen, theme preview, progress bar, `RETHEME.INI`, `WIN.INI` `load=`, Program Manager group over DDE, silent install, removal), configured by `dist/SETUP.INF` | `external/win16setup`, `dist/` | Windows 3.1 |
-| Release packages: ZIP, 1.44 MB floppy image, checksums, release notes (reproducible); tag-triggered GitHub release | `tools/release/`, `.github/workflows/release.yml` | locally |
-| Build: `make host/test/preview/win16/release`, GitHub Actions | `Makefile`, `win16.mk`, `.github/` | locally |
+| Release packages: ZIP, 1.44 MB floppy image, checksums, release notes (reproducible); tag-triggered GitHub release | `tools/release/`, `.github/workflows/build.yml` | locally |
+| Build: `make host/test/preview/win16/release`, GitHub Actions (rolling `snapshot` pre-release) | `Makefile`, `win16.mk`, `.github/` | locally |
 
 ## Known gaps
 

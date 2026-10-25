@@ -21,8 +21,11 @@
 | `make win16` | `build/win16/RETHEME.DLL`, `RETHEME.EXE`, the test program `GALLERY.EXE` and the installer `SETUP.EXE` (from the submodule `external/win16setup`; set `WATCOM=` if not `/opt/watcom`) |
 | `make release` | the release packages in `build/release/` (see below) |
 
-GitHub Actions runs `host`, `test`, `preview`, `win16` and `release` on every push and keeps the previews, the Win16
-binaries and the packages as build artifacts.
+GitHub Actions (`.github/workflows/build.yml`) installs the current Open Watcom snapshot, runs `test` and `release`
+on every push and pull request and keeps the packages, the Win16 binaries and the previews as build artifacts. Pushes
+to the default branch also replace the rolling pre-release
+[`snapshot`](https://github.com/ceisserer/win31_theme_engine/releases/tag/snapshot) (version `X.Y.Z-snapshot.<commit>`;
+locally: `make release RELEASE_VERSION=X.Y.Z-SUFFIX`). The build needs no licensed material.
 
 ## Installing on Windows 3.1
 
@@ -59,7 +62,7 @@ window per caption style and a message box.
 |---|---|
 | `make release` | builds everything and packages `build/release/`: `retheme16-X.Y.Z\` (the installation files with `SETUP.INF` and theme previews), `retheme16-X.Y.Z.zip`, `retheme16-X.Y.Z-disk.img`, `SHA256SUMS`, `RELEASE_NOTES.md` (from `CHANGELOG.md`). Needs Python with Pillow and mtools. The ZIP and the disk image are reproducible (dates from the last commit). |
 | `tools/release/release.sh [--emu BASE-IMG] [--push]` | checks the tree, `VERSION` and `CHANGELOG.md`, runs the tests and `make release`, optionally the QEMU install test (`tools/emu/test_setup.py`), tags `vX.Y.Z` and pushes the tag |
-| `.github/workflows/release.yml` | on a pushed `v*` tag: builds, tests, packages and publishes the GitHub release with the ZIP, the disk image and the checksums (0.x as pre-release). Where tags cannot be pushed, a branch push whose commit message starts with `Release vX.Y.Z`, or starting the workflow by hand, releases that commit and GitHub creates the tag. |
+| `.github/workflows/build.yml` | on a pushed `v*` tag (must match `VERSION`): builds, tests, packages and publishes the GitHub release with the ZIP, the disk image and the checksums (0.x as pre-release). Where tags cannot be pushed, a branch push whose commit message starts with `Release vX.Y.Z`, or starting the workflow by hand with "release" ticked, releases that commit and GitHub creates the tag. |
 
 To release: set `VERSION`, add a `## X.Y.Z` section to `CHANGELOG.md`, commit, then `tools/release/release.sh
 --push`.

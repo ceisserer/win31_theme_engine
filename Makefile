@@ -5,6 +5,7 @@
 #   make preview  render preview PNGs of every theme         -> build/preview/<theme>/
 #   make win16    RETHEME.DLL / RETHEME.EXE / SETUP.EXE with Open Watcom -> build/win16/
 #   make release  ZIP, floppy image and checksums           -> build/release/
+#                 (RELEASE_VERSION=X.Y.Z-SUFFIX for a snapshot)
 #
 # Open Watcom: set WATCOM (default /opt/watcom); see docs/BUILDING.md.
 
@@ -49,7 +50,7 @@ win16:
 
 # needs python3 with Pillow and mtools (see docs/BUILDING.md)
 release: preview win16
-	python3 tools/release/mkrelease.py
+	python3 tools/release/mkrelease.py $(if $(RELEASE_VERSION),--version $(RELEASE_VERSION))
 
 clean:
 	rm -rf build
