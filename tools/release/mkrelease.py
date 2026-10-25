@@ -30,7 +30,7 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 W16 = os.path.join(ROOT, "build", "win16")
 PACK = os.path.join(ROOT, "external", "win16setup", "tools", "w16pack.py")
-PROGRAMS = ["RETHEME.EXE", "RETHEME.DLL", "GALLERY.EXE"]
+PROGRAMS = ["RETHEME.EXE", "RETHEME.DLL", "THEMES.EXE", "GALLERY.EXE"]
 DEFAULT_THEME = "WIN95"
 
 

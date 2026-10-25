@@ -31,6 +31,7 @@ engine/include, theme, render, geom   portable core (C, builds with gcc and Open
 engine/win16                          RETHEME.DLL runtime: patches, hooks, GDI backend
 loader/                               RETHEME.EXE
 testapp/                              GALLERY.EXE test scenes
+switcher/                             THEMES.EXE: switches the theme of the running engine
 dist/                                 release package: SETUP.INF (installer configuration), README.TXT
 external/win16setup                   SETUP.EXE installer (git submodule: Win16Setup)
 host/                                 Linux backend, previewer, tests, golden images

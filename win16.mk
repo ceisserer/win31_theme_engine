@@ -27,7 +27,7 @@ CFLAGS_EXE = $(CFLAGS_COMMON) -zW
 vpath %.c engine/theme engine/render engine/geom engine/win16 loader
 
 .PHONY: all
-all: $(O)/RETHEME.DLL $(O)/RETHEME.EXE $(O)/GALLERY.EXE $(O)/SETUP.EXE
+all: $(O)/RETHEME.DLL $(O)/RETHEME.EXE $(O)/GALLERY.EXE $(O)/THEMES.EXE $(O)/SETUP.EXE
 
 $(O)/obj/%.obj: %.c $(wildcard engine/include/*.h engine/win16/*.h)
 	@mkdir -p $(O)/obj
@@ -57,6 +57,17 @@ $(O)/obj/gallery.res: testapp/gallery.rc testapp/gallery.h
 
 $(O)/GALLERY.EXE: $(O)/obj/gallery.obj $(O)/obj/gallery.res
 	wlink system windows name $@ option stack=8k, heapsize=2k, resource=$(O)/obj/gallery.res file $<
+
+$(O)/obj/themes.obj: switcher/themes.c switcher/themes.h
+	@mkdir -p $(O)/obj
+	wcc $(CFLAGS_EXE) -fo=$@ $<
+
+$(O)/obj/themes.res: switcher/themes.rc switcher/themes.h loader/retheme.ico
+	@mkdir -p $(O)/obj
+	wrc -q -r -bt=windows -i=switcher -i=loader -fo=$@ $<
+
+$(O)/THEMES.EXE: $(O)/obj/themes.obj $(O)/obj/themes.res
+	wlink system windows name $@ option stack=8k, heapsize=2k, resource=$(O)/obj/themes.res file $<
 
 # SETUP.EXE: Win16Setup (git submodule external/win16setup)
 W16SETUP = external/win16setup
