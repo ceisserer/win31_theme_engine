@@ -13,6 +13,8 @@ Windows 3.1 and Windows for Workgroups 3.11. Working name: Retheme16.
 
 Releases with the installer (`SETUP.EXE`, as ZIP and as 1.44 MB floppy image) are on the
 [Releases page](https://github.com/ceisserer/win31_theme_engine/releases). Unzip, run `SETUP.EXE`, pick a theme.
+The pre-release [snapshot](https://github.com/ceisserer/win31_theme_engine/releases/tag/snapshot) is rebuilt from
+every push to the default branch (untested, for trying out the latest changes).
 
 ## Documents
 

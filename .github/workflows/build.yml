@@ -1,0 +1,189 @@
+# Builds, tests and packages Retheme16 (ZIP, 1.44 MB floppy image) with the
+# current Open Watcom snapshot. No licensed material is needed.
+#
+#   every push / pull request   build + test; the packages and the Win16
+#                               binaries are kept as workflow artifacts
+#   push to the default branch  also replaces the rolling pre-release
+#                               "snapshot" (version X.Y.Z-snapshot.<commit>)
+#   push of a tag vX.Y.Z        publishes the release vX.Y.Z (0.x as
+#                               pre-release); the tag must match VERSION
+#   where tags cannot be pushed a branch push whose commit message starts
+#                               with "Release vX.Y.Z", or starting this
+#                               workflow by hand with "release" ticked,
+#                               releases that commit and creates the tag
+#
+# A release needs a "## X.Y.Z" section in CHANGELOG.md (the release notes).
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Publish the version in VERSION as release vX.Y.Z (creates the tag)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      kind: ${{ steps.version.outputs.kind }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Version
+        id: version
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          INPUT_RELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.release }}
+        run: |
+          v=$(cat VERSION)
+          kind=snapshot
+          case "$GITHUB_REF" in
+          refs/tags/v*)
+            [ "$GITHUB_REF_NAME" = "v$v" ] || { echo "::error::tag $GITHUB_REF_NAME does not match VERSION $v"; exit 1; }
+            kind=release ;;
+          refs/heads/*)
+            if [ "$INPUT_RELEASE" = true ]; then
+              kind=release
+            elif [ "$GITHUB_EVENT_NAME" = push ] && [ "${COMMIT_MESSAGE#Release v}" != "$COMMIT_MESSAGE" ]; then
+              msg_v=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n1 | sed -E 's/^Release v([0-9A-Za-z.+-]*).*/\1/')
+              [ "$msg_v" = "$v" ] || { echo "::error::commit message says v$msg_v, VERSION is $v"; exit 1; }
+              kind=release
+            fi
+            if [ $kind = release ] && git ls-remote --exit-code --tags origin "refs/tags/v$v" >/dev/null; then
+              echo "::error::tag v$v exists already"; exit 1
+            fi ;;
+          esac
+          if [ $kind = release ]; then
+            grep -Eq "^## \[?$v\]?( |\$)" CHANGELOG.md || { echo "::error::CHANGELOG.md has no section '## $v'"; exit 1; }
+          else
+            v="$v-snapshot.$(git rev-parse --short=7 HEAD)"
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
+          echo "$kind $v"
+
+      - name: Install packages
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q mtools python3-pil
+
+      # Open Watcom only publishes the rolling "Current-build" snapshot; the
+      # cache key follows its upload time, so a new snapshot is picked up on
+      # the next run.
+      - name: Find the current Open Watcom snapshot
+        id: ow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          stamp=$(gh api repos/open-watcom/open-watcom-v2/releases/tags/Current-build \
+                  --jq '.assets[] | select(.name == "ow-snapshot.tar.xz") | .updated_at')
+          [ -n "$stamp" ] || { echo "::error::no ow-snapshot.tar.xz in open-watcom-v2 Current-build"; exit 1; }
+          echo "stamp=$stamp" >> "$GITHUB_OUTPUT"
+          echo "Open Watcom snapshot of $stamp"
+
+      - name: Cache Open Watcom
+        id: owcache
+        uses: actions/cache@v4
+        with:
+          path: ~/ow-snapshot.tar.xz
+          key: ow-snapshot-${{ steps.ow.outputs.stamp }}
+
+      - name: Download Open Watcom
+        if: steps.owcache.outputs.cache-hit != 'true'
+        run: curl -fsSL -o ~/ow-snapshot.tar.xz https://github.com/open-watcom/open-watcom-v2/releases/download/Current-build/ow-snapshot.tar.xz
+
+      - name: Install Open Watcom
+        run: |
+          mkdir -p ~/watcom
+          tar xJf ~/ow-snapshot.tar.xz -C ~/watcom
+          echo "WATCOM=$HOME/watcom" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: make test
+
+      - name: Build and package
+        run: make release RELEASE_VERSION=${{ steps.version.outputs.version }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retheme16-${{ steps.version.outputs.version }}
+          path: |
+            build/release/*.zip
+            build/release/*.img
+            build/release/SHA256SUMS
+            build/release/RELEASE_NOTES.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: win16-binaries-${{ steps.version.outputs.version }}
+          path: |
+            build/win16/*.EXE
+            build/win16/*.DLL
+            build/win16/*.MAP
+            build/preview/
+
+  snapshot:
+    needs: build
+    if: >-
+      needs.build.outputs.kind == 'snapshot' && github.event_name == 'push' &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: snapshot
+      cancel-in-progress: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: retheme16-${{ needs.build.outputs.version }}
+          path: release
+
+      - name: Replace the snapshot release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          cat > notes.md <<EOF
+          Automatic build of $GITHUB_SHA on \`${GITHUB_REF_NAME}\`, replaced on every push.
+          Not a release: for testing only. Unzip (or use the floppy image) and run \`SETUP.EXE\`.
+          EOF
+          gh release delete snapshot --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes || true
+          gh release create snapshot --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --latest=false --title "Snapshot $VERSION" --notes-file notes.md \
+            release/*.zip release/*.img release/SHA256SUMS
+
+  release:
+    needs: build
+    if: needs.build.outputs.kind == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: retheme16-${{ needs.build.outputs.version }}
+          path: release
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          pre=
+          case "$VERSION" in 0.*) pre=--prerelease ;; esac
+          gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" $pre \
+            --title "Retheme16 $VERSION" --notes-file release/RELEASE_NOTES.md \
+            release/*.zip release/*.img release/SHA256SUMS

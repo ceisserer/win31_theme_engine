@@ -1,0 +1,3 @@
+[submodule "external/win16setup"]
+	path = external/win16setup
+	url = https://github.com/ceisserer/Win16Setup
