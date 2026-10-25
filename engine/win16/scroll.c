@@ -6,7 +6,10 @@
  *   - FastWindowFrame around the whole bar,
  *   - StretchBlt of each arrow from its bitmap strip (17x17),
  *   - PatBlt(PATCOPY) of the track with the COLOR_SCROLLBAR brush,
- *   - FastWindowFrame around the thumb, then PatBlt lines for its 3D look.
+ *   - FastWindowFrame around the thumb, then PatBlt lines for its 3D look;
+ *   - while the thumb is dragged: an inverted outline (FastWindowFrame,
+ *     PATINVERT) at the new place, drawn and erased again for every move;
+ *     the thumb itself only moves when the mouse button is released.
  * On a scroll bar DC these become the theme's track, arrow buttons and
  * thumb. Besides WM_NCPAINT / WM_PAINT, USER repaints scroll bars inside
  * SetScrollPos, SetScrollRange, EnableScrollBar and its tracking loop; each
@@ -23,6 +26,8 @@ static HWND stack[MAX_DEPTH];
 static int  depth;
 static RECT thumb;          /* thumb drawn last (its 3D lines are dropped) */
 static HDC  thumb_dc;
+static RECT drag;           /* thumb drawn for USER's drag outline */
+static BOOL drag_on;
 
 static const int scroll_patches[] = { P_PATBLT, P_BITBLT, P_STRETCHBLT, P_FASTWINDOWFRAME };
 
@@ -53,8 +58,10 @@ void scroll_end(HWND hwnd)
     if (depth > 0)
         depth--;
     g_scroll_hwnd = depth > 0 && depth <= MAX_DEPTH ? stack[depth - 1] : 0;
-    if (!depth)
+    if (!depth) {
         thumb_dc = 0;
+        drag_on = FALSE;
+    }
 }
 
 static BOOL themed_control(HWND hwnd)
@@ -207,6 +214,30 @@ BOOL scroll_gdi(int op, HDC hdc, int x, int y, int w, int h, HDC src, int sx, in
     patch_suspend();
     switch (op) {
     case GOP_FRAME:
+        if (extra == PATINVERT) {
+            /* USER's drag outline. Like Win95, the thumb follows the mouse
+             * instead: the track over the old place, the thumb at the new
+             * one. The second, erasing call at the same place is dropped;
+             * on release USER repaints the track and the thumb. */
+            RECT r;
+            int a = vert ? bar.right - bar.left : bar.bottom - bar.top;
+            SetRect(&r, x, y, x + w, y + h);
+            if (!drag_on || !EqualRect(&r, &drag)) {
+                if (vert)
+                    render(hdc, RT_PART_SCROLLTRACKV, RT_ST_NORMAL, bar.left, bar.top + a, bar.right,
+                           bar.bottom - a);
+                else
+                    render(hdc, RT_PART_SCROLLTRACKH, RT_ST_NORMAL, bar.left + a, bar.top, bar.right - a,
+                           bar.bottom);
+                render(hdc, vert ? RT_PART_SCROLLTHUMBV : RT_PART_SCROLLTHUMBH, RT_ST_NORMAL, x, y, x + w,
+                       y + h);
+                drag = r;
+                drag_on = TRUE;
+            }
+            done = TRUE;
+            break;
+        }
+        drag_on = FALSE;
         if (x == bar.left && y == bar.top && x + w == bar.right && y + h == bar.bottom) {
             /* The whole bar (drawn after the arrows): Win95 has no black
              * outline, so the track covers it between the arrow buttons. */

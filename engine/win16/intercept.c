@@ -294,7 +294,7 @@ BOOL RT_HANDLER h_FastWindowFrame(HDC hdc, LPRECT rc, int xw, int yw, DWORD rop)
                                     rc->bottom - rc->top, 0, 0, 0))
         return TRUE;
     if ((g_scroll_hwnd || g_nc_hwnd) && scroll_gdi(GOP_FRAME, hdc, rc->left, rc->top, rc->right - rc->left,
-                                                   rc->bottom - rc->top, 0, 0, 0, 0))
+                                                   rc->bottom - rc->top, 0, 0, 0, rop))
         return TRUE;
     patch_suspend();
     r = orig(hdc, rc, xw, yw, rop);
