@@ -127,7 +127,7 @@ needs no INI parsing at boot.
 
 ```ini
 [Theme]
-Name=Windows 95 Classic
+Name=Redmond 95
 Author=Retheme16 project
 Version=1.0
 Format=1                 ; theme-format version understood by the engine

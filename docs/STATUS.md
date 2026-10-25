@@ -49,7 +49,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Built-in glyphs (caption buttons, arrows, check marks, radio parts, size grip), original pixel art | `engine/render/glyphs.c` | golden images |
 | Theme layout of the non-client area (Win95 button rules, configurable layout) | `engine/geom/nclayout.c` | host tests |
 | USER 3.1 caption model (measured: bar `SM_CYSIZE` high, boxes `SM_CXSIZE+1` wide, dialog frame `SM_CXDLGFRAME` + border, menu bar `SM_CYMENU` + line) and theme→USER point mapping | `engine/geom/nclayout.c`, `engine/win16/ncpaint.c` | Windows 3.1 (US, German), WfW 3.11 |
-| Default theme `WIN95` (procedural only); sample themes `WIN98` (derived) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
+| Default theme `WIN95` "Redmond 95" (procedural only); `WIN98` "Redmond 98" and `WINME` "Redmond ME" (derived; `WINME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
 | Host tools: software backend, PNG writer, previewer, test suite | `host/` | — |
 | Win16 runtime: patch engine (alias selectors, JMP FAR, arm/disarm per reason, suspend/resume, permanent patches), hooks, one-shot subclassing with post-processing of the result, per-window state, log ring buffer, trace levels 1/2 | `engine/win16/` | Windows |
 | Interceptors: `PatBlt`, `BitBlt`, `StretchBlt`, `ExtTextOut`, `TextOut`, `Rectangle`, `LineTo`, `Polyline`, `SetPixel`, `FastWindowFrame`, `GetTextExtent`, `GetTextExtentPoint`, `PtInRect`, `SysErrorBox`, `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` | `engine/win16/intercept.c`, `scroll.c` | Windows |

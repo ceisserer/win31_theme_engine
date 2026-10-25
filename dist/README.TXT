@@ -23,7 +23,7 @@ Silent installation (for scripts and network installs):
   SETUP /S [/D=C:\RETHEME] [/T=WIN95] [/NOLOAD] [/NOGROUP] [/NOSTART]
 
   /D=dir      installation directory
-  /T=theme    theme directory name: WIN95, WIN98 or SLATE
+  /T=theme    theme directory name: WIN95, WIN98, WINME or SLATE
   /NOLOAD     do not start Retheme16 with Windows
   /NOGROUP    no Program Manager group
   /NOSTART    do not start Retheme16 after installing
@@ -55,8 +55,9 @@ Program Manager group.
 
 THEMES
 
-  WIN95   Windows 95 (default)
-  WIN98   Windows 98 (gradient title bars)
+  WIN95   Redmond 95 (default)
+  WIN98   Redmond 98 (gradient title bars)
+  WINME   Redmond ME (beige, gradient title bars; best with 256 colours)
   SLATE   a dark example theme made of bitmaps
 
 How to write themes: docs/THEME_FORMAT.md in the source code.
