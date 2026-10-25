@@ -22,7 +22,8 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   restore, minimize, moving by the caption, the theme's close button.
 * **Dialogs:** grey background (`WM_CTLCOLOR`), Win95 push buttons (default frame, pressed, focus), check boxes and
   radio buttons in all states, embossed disabled text, etched group boxes, sunken 3D borders around edit and list
-  boxes; message boxes with the System font swapped for MS Sans Serif.
+  boxes; message boxes with the System font swapped for MS Sans Serif; the bold font of dialog templates (`FONT`
+  statement) replaced by a regular copy, as in Windows 95.
 * **Menus:** grey Win95 menu bar and popup menus with 3D border, highlight bar, MS Sans Serif text (USER measures
   with that font too, so widths and mnemonic underlines fit), embossed disabled items, etched separators, theme
   check marks and sub-menu arrows, the system menu; unloading restores the 3.1 menus.
