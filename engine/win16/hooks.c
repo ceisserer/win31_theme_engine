@@ -179,8 +179,11 @@ static void dispatch_sent(LPCWPSTRUCT16 cwp)
             if (cwp->message == WM_NCACTIVATE)
                 active = cwp->wParam != 0;
             else {
+                /* WS_F_ACTIVE is known once the caption was painted; until
+                 * then (windows that were open when the engine started) ask */
                 WState FAR *ws = ws_get(hwnd, FALSE);
-                active = ws ? (ws->flags & WS_F_ACTIVE) != 0 : GetActiveWindow() == hwnd;
+                active = ws && (ws->flags & WS_F_THEMED) ? (ws->flags & WS_F_ACTIVE) != 0
+                                                          : GetActiveWindow() == hwnd;
             }
             if (oneshot_push(hwnd, cwp->message, JOB_NC, cwp->wParam, cwp->lParam))
                 nc_begin(hwnd, active);
