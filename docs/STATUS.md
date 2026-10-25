@@ -27,7 +27,8 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * **Menus:** grey Win95 menu bar and popup menus with 3D border, highlight bar, MS Sans Serif text (USER measures
   with that font too, so widths and mnemonic underlines fit), embossed disabled items, etched separators, theme
   check marks and sub-menu arrows, the system menu; unloading restores the 3.1 menus.
-* **Scroll bars and combo boxes:** window scroll bars (top-level windows, list boxes), scroll bar controls and
+* **Scroll bars and combo boxes:** window scroll bars (top-level windows, list boxes, child windows of themed windows with and
+  without a border), scroll bar controls and
   drop-down list combo boxes have Win95 arrow buttons (pressed and released), dither track and raised thumb;
   also while scrolling (`SetScrollPos`, tracking loops).
 * **Safety:** the `SysErrorBox` emergency path (an empty floppy drive triggers the system error box: all patches are
