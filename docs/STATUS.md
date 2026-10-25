@@ -57,7 +57,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Controls in dialogs: push / check / radio / group boxes, static text, edit and list box borders, drop-down list combo boxes, `WM_CTLCOLOR`, font swap | `engine/win16/controls.c` | Windows |
 | Menus: menu bar, popups, system menu; `GetTextExtent[Point]` patched while USER lays out menus | `engine/win16/menus.c` | Windows |
 | Scroll bars: window scroll bars, list box scroll bars, scroll bar controls; `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` patched (USER repaints inside them) | `engine/win16/scroll.c` | Windows |
-| Loader `RETHEME.EXE`, test program `GALLERY.EXE` | `loader/`, `testapp/` | Windows |
+| Loader `RETHEME.EXE`, theme switcher `THEMES.EXE`, test program `GALLERY.EXE` | `loader/`, `switcher/`, `testapp/` | Windows |
 | Emulator tooling: DOS disk builder, unattended Windows 3.1 install (any language), debug-kernel image, VBE SVGA image, scripted runs, golden comparison | `tools/emu/` | used for all Windows tests |
 | Installer: [Win16Setup](https://github.com/ceisserer/Win16Setup) (submodule; blue setup screen, theme preview, progress bar, `RETHEME.INI`, `WIN.INI` `load=`, Program Manager group over DDE, silent install, removal), configured by `dist/SETUP.INF` | `external/win16setup`, `dist/` | Windows 3.1 |
 | Release packages: ZIP, 1.44 MB floppy image, checksums, release notes (reproducible); tag-triggered GitHub release | `tools/release/`, `.github/workflows/build.yml` | locally |

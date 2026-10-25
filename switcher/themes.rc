@@ -1,0 +1,18 @@
+/* themes.rc - icon and dialog of THEMES.EXE */
+#include <windows.h>
+#include "themes.h"
+
+RETHEME ICON retheme.ico
+
+IDD_THEMES DIALOG 20, 20, 300, 160
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Retheme16 Themes"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Themes:", -1, 6, 6, 80, 8
+    LISTBOX         IDC_LIST, 6, 16, 80, 104, LBS_NOTIFY | WS_VSCROLL | WS_BORDER | WS_TABSTOP
+    CONTROL         "", IDC_PREVIEW, "RtThemePreview", WS_CHILD | WS_VISIBLE, 92, 6, 202, 114
+    LTEXT           "", IDC_STATE, 6, 126, 288, 8, SS_NOPREFIX
+    DEFPUSHBUTTON   "&Apply", IDC_APPLY, 188, 140, 50, 14, WS_TABSTOP
+    PUSHBUTTON      "Close", IDCANCEL, 244, 140, 50, 14, WS_TABSTOP
+END

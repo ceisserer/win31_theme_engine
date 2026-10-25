@@ -18,7 +18,7 @@
 | `make test` | runs the host test suite: INI parser, theme loader, layouts, glyphs, golden images |
 | `make preview` | renders every theme in `themes/` to `build/preview/<THEME>/*.png` |
 | `make update-golden` | rewrites `host/tests/golden/*.png` after an intended rendering change (review the diff) |
-| `make win16` | `build/win16/RETHEME.DLL`, `RETHEME.EXE`, the test program `GALLERY.EXE` and the installer `SETUP.EXE` (from the submodule `external/win16setup`; set `WATCOM=` if not `/opt/watcom`) |
+| `make win16` | `build/win16/RETHEME.DLL`, `RETHEME.EXE`, the theme switcher `THEMES.EXE`, the test program `GALLERY.EXE` and the installer `SETUP.EXE` (from the submodule `external/win16setup`; set `WATCOM=` if not `/opt/watcom`) |
 | `make release` | the release packages in `build/release/` (see below) |
 
 GitHub Actions (`.github/workflows/build.yml`) installs the current Open Watcom snapshot, runs `test` and `release`
@@ -52,6 +52,9 @@ Theme=C:\RETHEME\THEMES\WIN95
 ```
 
 Requirements: Windows 3.1 or Windows for Workgroups 3.11 in Standard or 386 Enhanced mode.
+
+`THEMES.EXE` lists the themes in `THEMES\` with their `PREVIEW.BMP`; Apply writes the theme to `RETHEME.INI`,
+stops the running engine and starts `RETHEME.EXE` again (no restart of Windows).
 
 `GALLERY.EXE` (the Theme Gallery) opens test scenes: `GALLERY dialog styles msgbox` shows the controls dialog, one
 window per caption style and a message box.

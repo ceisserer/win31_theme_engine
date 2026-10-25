@@ -35,8 +35,9 @@ USING RETHEME16
 
 RETHEME.EXE loads the engine and stays as an icon. Closing the icon
 unloads the engine and restores the Windows 3.1 look. To change the
-theme, run "Retheme16 Setup" from the Program Manager group again, or
-edit RETHEME.INI:
+theme, run "Themes" (THEMES.EXE) from the Program Manager group: it shows
+a preview of each theme and switches at once. The theme is kept in
+RETHEME.INI:
 
   [Engine]
   Theme=C:\RETHEME\THEMES\WIN95

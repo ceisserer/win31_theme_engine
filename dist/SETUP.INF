@@ -27,9 +27,10 @@ Program=RETHEME.EXE
 [Group]
 Name=Retheme16
 1=%DIR%\RETHEME.EXE,Retheme16
-2=%DIR%\GALLERY.EXE,Theme Gallery
-3=%DIR%\SETUP.EXE,Retheme16 Setup
-4=NOTEPAD.EXE %DIR%\README.TXT,Read Me,NOTEPAD.EXE
+2=%DIR%\THEMES.EXE,Themes
+3=%DIR%\GALLERY.EXE,Theme Gallery
+4=%DIR%\SETUP.EXE,Retheme16 Setup
+5=NOTEPAD.EXE %DIR%\README.TXT,Read Me,NOTEPAD.EXE
 
 [StartNow]
 Program=RETHEME.EXE
@@ -41,6 +42,7 @@ Wait=RETHEME,RTLOADER
 
 [Running]
 1=GALLERY,the Theme Gallery
+2=THEMES,Themes
 
 [Uninstall]
 1=RETHEME.INI
