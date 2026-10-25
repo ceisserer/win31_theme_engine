@@ -509,25 +509,64 @@ void ctl_ctlcolor(HWND dlg, WPARAM wp, LPARAM lp, LRESULT FAR *result)
     *result = (LRESULT)(UINT)face_brush;
 }
 
-/* Swap the System font for the theme's "Controls" font. */
-static void swap_font(HWND hwnd)
+/* Windows 3.1 creates the font of a dialog template (FONT statement) bold;
+ * Windows 95 does not. Non-bold copies of such fonts, made on first use and
+ * found again by their attributes (a dialog deletes its font when it closes,
+ * and the next one may get the same handle for another font). */
+#define MAX_LIGHT 8
+
+static struct { LOGFONT lf; HFONT font; } light[MAX_LIGHT];
+
+static HFONT light_font(HFONT bold)
 {
-    HFONT f = (HFONT)rt_theme_font(g_theme, "Controls");
+    LOGFONT lf;
+    int i;
+    /* GetObject returns the size up to the end of the face name */
+    if (!GetObject(bold, sizeof(lf), &lf) || lf.lfWeight < FW_BOLD)
+        return 0;
+    lf.lfWeight = FW_NORMAL;
+    for (i = 0; i < MAX_LIGHT && light[i].font; i++)
+        if (light[i].lf.lfHeight == lf.lfHeight && light[i].lf.lfWidth == lf.lfWidth
+            && light[i].lf.lfItalic == lf.lfItalic && light[i].lf.lfUnderline == lf.lfUnderline
+            && light[i].lf.lfStrikeOut == lf.lfStrikeOut && light[i].lf.lfCharSet == lf.lfCharSet
+            && lstrcmpi(light[i].lf.lfFaceName, lf.lfFaceName) == 0)
+            return light[i].font;
+    if (i == MAX_LIGHT)
+        return 0;
+    light[i].font = CreateFontIndirect(&lf);
+    light[i].lf = lf;
+    return light[i].font;
+}
+
+/* Swap the System font for the theme's "Controls" font, and the bold font
+ * of the dialog template (dlg_font) for a non-bold copy. Fonts the program
+ * gave a control itself are left alone. */
+static void swap_font(HWND hwnd, HFONT dlg_font)
+{
+    HFONT cur = (HFONT)SendMessage(hwnd, WM_GETFONT, 0, 0), f;
     WState FAR *ws;
-    if (!f || SendMessage(hwnd, WM_GETFONT, 0, 0))
+    if (!cur)
+        f = (HFONT)rt_theme_font(g_theme, "Controls");
+    else if (cur == dlg_font)
+        f = light_font(cur);
+    else
+        return;
+    if (!f)
         return;
     ws = ws_get(hwnd, TRUE);
     if (!ws)
         return;
     ws->flags |= WS_F_FONTSWAP;
+    ws->oldfont = cur;
     SendMessage(hwnd, WM_SETFONT, (WPARAM)f, 0);
 }
 
 void ctl_dialog_init(HWND dlg)
 {
+    HFONT dlg_font = (HFONT)SendMessage(dlg, WM_GETFONT, 0, 0);
     HWND c;
     for (c = GetWindow(dlg, GW_CHILD); c; c = GetWindow(c, GW_HWNDNEXT))
-        swap_font(c);
+        swap_font(c, dlg_font);
 }
 
 /* The control's own 1-pixel border is inside its window (list boxes:
@@ -635,7 +674,7 @@ static void restore_font(HWND hwnd)
 {
     WState FAR *ws = ws_get(hwnd, FALSE);
     if (ws && (ws->flags & WS_F_FONTSWAP) && IsWindow(hwnd)) {
-        SendMessage(hwnd, WM_SETFONT, 0, 1);
+        SendMessage(hwnd, WM_SETFONT, (WPARAM)ws->oldfont, 1);
         ws->flags &= ~WS_F_FONTSWAP;
     }
 }
@@ -654,10 +693,16 @@ BOOL CALLBACK __export ctl_restore_top(HWND hwnd, LPARAM lp)
     return TRUE;
 }
 
-/* At unload: give swapped controls their System font back. */
+/* At unload: give swapped controls their font back. */
 void ctl_shutdown(void)
 {
+    int i;
     EnumWindows((WNDENUMPROC)ctl_restore_top, 0);
+    for (i = 0; i < MAX_LIGHT; i++) {
+        if (light[i].font)
+            DeleteObject(light[i].font);
+        light[i].font = 0;
+    }
     if (face_brush)
         DeleteObject(face_brush);
     face_brush = 0;
@@ -667,9 +712,10 @@ void ctl_shutdown(void)
 
 BOOL CALLBACK __export ctl_init_child(HWND hwnd, LPARAM lp)
 {
+    HWND dlg = GetParent(hwnd);
     (void)lp;
-    if (ctl_class(GetParent(hwnd)) == CLS_DIALOG)
-        swap_font(hwnd);
+    if (ctl_class(dlg) == CLS_DIALOG)
+        swap_font(hwnd, (HFONT)SendMessage(dlg, WM_GETFONT, 0, 0));
     return TRUE;
 }
 

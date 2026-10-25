@@ -98,7 +98,7 @@ void hooks_remove(void);
 #define WS_F_THEMED     0x0001      /* frame and caption are themed */
 #define WS_F_EXCLUDED   0x0002
 #define WS_F_ACTIVE     0x0004      /* caption drawn active */
-#define WS_F_FONTSWAP   0x0008      /* System font replaced by the theme font */
+#define WS_F_FONTSWAP   0x0008      /* font replaced: by the theme font or a non-bold copy */
 #define WS_F_FIELD      0x0010      /* edit control with a border: gets the 3D ring */
 
 /* WState.classcode (0 = not classified yet) */
@@ -109,6 +109,7 @@ typedef struct WState {
     HWND   hwnd;
     WORD   flags;
     WORD   classcode;
+    HFONT  oldfont;                 /* WS_F_FONTSWAP: the font before (0 = System font) */
     RtNcIn nc;                      /* last computed geometry input */
 } WState;
 
