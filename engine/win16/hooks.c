@@ -134,6 +134,8 @@ LRESULT CALLBACK __export __loadds OneShotProc(HWND hwnd, UINT msg, WPARAM wp, L
     if (msg == o.msg || o.job == JOB_NC || o.job == JOB_TRACK || o.job == JOB_CTL || o.job == JOB_MEASURE
         || o.job == JOB_SCROLL)
         post_process(&o, &r);
+    if (msg == WM_NCDESTROY)
+        ws_forget(hwnd);    /* post-processing may have created state again */
     return r;
 }
 
@@ -201,8 +203,11 @@ static void dispatch_sent(LPCWPSTRUCT16 cwp)
             oneshot_push(hwnd, WM_INITDIALOG, JOB_DLGINIT, cwp->wParam, cwp->lParam);
         break;
     case WM_NCDESTROY:
+        /* forget the window after everything that looks at it: its handle
+         * is reused soon, and a new window must not inherit its state */
+        menu_message(hwnd, cwp->message, cwp->wParam, cwp->lParam);
         ws_forget(hwnd);
-        break;
+        return;
     case WM_SYSCOLORCHANGE:
         if (g_theme)
             rt_theme_syscolor_changed(g_theme);
