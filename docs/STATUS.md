@@ -67,7 +67,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 ## Known gaps
 
 * Controls are themed only inside dialogs (`#32770`); controls in ordinary windows keep the 3.1 look (window
-  scroll bars of top-level windows are themed).
+  scroll bars of themed windows and their child windows are themed).
 * Combo boxes: only drop-down lists (`CBS_DROPDOWNLIST`); simple and drop-down (edit) combo boxes keep the 3.1 look.
 * Not yet themed: MDI children, the desktop, icon titles, the task list.
 * A disabled menu item that is selected is embossed on the highlight bar (Win95 draws it flat grey).
