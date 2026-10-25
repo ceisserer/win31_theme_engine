@@ -113,6 +113,9 @@ typedef struct WState {
     RtNcIn nc;                      /* last computed geometry input */
 } WState;
 
+/* ---- platform16.c ---- */
+void rt16_set_win95_color(int index, RtColor c, BOOL on);
+
 WState FAR *ws_get(HWND hwnd, BOOL create);
 void        ws_forget(HWND hwnd);
 void        ws_clear(void);

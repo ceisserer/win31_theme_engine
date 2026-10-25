@@ -38,6 +38,60 @@ static void repaint_all(void)
     EnumWindows((WNDENUMPROC)repaint_one, 0);
 }
 
+/* The theme's [SysColors], set while the engine runs; the old values come
+ * back at the stop unless the colour was changed meanwhile. */
+static int      nsys;
+static int      sys_idx[RT_SYS_COUNT];
+static COLORREF sys_old[RT_SYS_COUNT], sys_new[RT_SYS_COUNT];
+
+static void syscolors_apply(void)
+{
+    rt_u8 idx[RT_SYS_COUNT];
+    RtColor rgb[RT_SYS_COUNT];
+    int i, n = rt_theme_syscolors(g_theme, idx, rgb);
+    HDC hdc = GetDC(NULL);
+    /* with 16 colours Windows would dither most of them: use the nearest
+     * solid colours instead */
+    BOOL few = GetDeviceCaps(hdc, BITSPIXEL) * GetDeviceCaps(hdc, PLANES) < 8;
+    for (i = 0; i < n && few; i++)
+        rgb[i] = (RtColor)GetNearestColor(hdc, (COLORREF)rgb[i]);
+    ReleaseDC(NULL, hdc);
+    nsys = 0;
+    for (i = 0; i < n; i++) {
+        if (idx[i] == RT_SYS_3DDKSHADOW || idx[i] == RT_SYS_3DLIGHT) {
+            rt16_set_win95_color(idx[i], rgb[i], TRUE);
+            continue;
+        }
+        sys_idx[nsys] = idx[i];
+        sys_old[nsys] = GetSysColor(idx[i]);
+        sys_new[nsys] = (COLORREF)rgb[i];
+        nsys++;
+    }
+    if (nsys)
+        SetSysColors(nsys, sys_idx, sys_new);
+    if (n) {
+        log_msg("theme sets %d system colour(s)%s", n, (LPSTR)(few ? ", nearest solid colours" : ""));
+        rt_theme_syscolor_changed(g_theme);
+    }
+}
+
+static void syscolors_restore(void)
+{
+    int idx[RT_SYS_COUNT], i, n = 0;
+    COLORREF old[RT_SYS_COUNT];
+    for (i = 0; i < nsys; i++)
+        if (GetSysColor(sys_idx[i]) == sys_new[i]) {
+            idx[n] = sys_idx[i];
+            old[n] = sys_old[i];
+            n++;
+        }
+    if (n)
+        SetSysColors(n, idx, old);
+    nsys = 0;
+    rt16_set_win95_color(RT_SYS_3DDKSHADOW, 0, FALSE);
+    rt16_set_win95_color(RT_SYS_3DLIGHT, 0, FALSE);
+}
+
 int FAR PASCAL __export __loadds RtStart(LPCSTR theme_dir)
 {
     WORD v = LOWORD(GetVersion());
@@ -62,6 +116,7 @@ int FAR PASCAL __export __loadds RtStart(LPCSTR theme_dir)
     if (g_theme->log[0])
         log_msg("theme warnings: %s", (LPSTR)g_theme->log);
     log_msg("theme: %s", (LPSTR)g_theme->name);
+    syscolors_apply();
     log_msg("metrics: frame %d/%d dlgframe %d/%d border %d/%d size %d/%d caption %d menu %d vscroll %d",
             GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYFRAME),
             GetSystemMetrics(SM_CXDLGFRAME), GetSystemMetrics(SM_CYDLGFRAME),
@@ -80,6 +135,7 @@ int FAR PASCAL __export __loadds RtStart(LPCSTR theme_dir)
         rt_theme_free(g_theme);
         g_theme = 0;
         gdi_shutdown();
+        syscolors_restore();
         return -4;
     }
     g_running = TRUE;
@@ -124,6 +180,7 @@ int FAR PASCAL __export __loadds RtStop(void)
     rt_theme_free(g_theme);
     g_theme = 0;
     gdi_shutdown();
+    syscolors_restore();
     repaint_all();
     return 1;
 }

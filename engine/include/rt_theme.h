@@ -131,6 +131,9 @@ typedef struct RtTheme {
     char        dir[80];
     struct RtTheme *base;   /* inherited theme, owned */
     rt_u8       sys_colors; /* ColorMode=System */
+    rt_u8       nsys;       /* [SysColors]: system colours the theme sets */
+    rt_u8       sys_idx[RT_SYS_COUNT];
+    RtColor     sys_rgb[RT_SYS_COUNT];
     RtMetrics   metrics;
     rt_u16      ncolors, nfonts, nimages, nops;
     RtColorDef  colors[RT_MAX_COLORS];
@@ -155,6 +158,10 @@ void     rt_theme_free(RtTheme *t);
 void     rt_theme_set_search_dir(const char *dir);
 /* Re-resolves Sys: colours and rebuilds recoloured images. */
 void     rt_theme_syscolor_changed(RtTheme *t);
+/* The system colours to set while the theme is active ([SysColors] of the
+ * theme and its bases; the theme wins over its base). Fills idx/rgb
+ * (RT_SYS_COUNT entries each), returns the count. */
+int      rt_theme_syscolors(const RtTheme *t, rt_u8 *idx, RtColor *rgb);
 /* Finds the op for (part, state) following the state fallback chain and
  * the Base= chain. 'owner' receives the theme the op belongs to. */
 const RtOp *rt_theme_find(const RtTheme *t, int part, int state, const RtTheme **owner);

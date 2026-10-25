@@ -35,7 +35,7 @@ switcher/                             THEMES.EXE: switches the theme of the runn
 dist/                                 release package: SETUP.INF (installer configuration), README.TXT
 external/win16setup                   SETUP.EXE installer (git submodule: Win16Setup)
 host/                                 Linux backend, previewer, tests, golden images
-themes/                               themes: WIN95 (default), WIN98, SLATE
+themes/                               themes: WIN95 (default), WIN98, WINME, SLATE
 tools/                                generators, emulator tests (tools/emu), release packaging (tools/release)
 ```
 

@@ -58,6 +58,23 @@ A colour value is one of:
 * the name of a `[Colors]` entry;
 * `None` (draw nothing).
 
+### `[SysColors]`
+
+System colours the engine sets while the theme is active, for a look whose colours differ from the Control
+Panel's (`WINME`: the beige Windows ME scheme). Keys are the `Sys:` names above, values literal `r,g,b`:
+
+```ini
+[SysColors]
+BtnFace=212,208,200
+Background=58,110,165
+3DDkShadow=64,64,64       ; the two Win95 colours only affect the theme's own drawing
+```
+
+The engine sets them with `SetSysColors` when it starts (nothing is written to `WIN.INI`), so programs that draw
+with system colours follow too, and puts the old values back when it stops, except colours changed in the
+meantime. With 16 colours or fewer the nearest solid colours are used; Windows would dither the others. A theme
+inherits the `[SysColors]` of its base and can override single entries.
+
 ### `[Fonts]`
 
 ```ini

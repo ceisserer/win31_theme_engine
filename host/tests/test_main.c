@@ -114,7 +114,7 @@ static void test_theme_classic(void)
     if (t->log[0])
         fprintf(stderr, "WIN95 warnings:\n%s", t->log);
     CHECK_EQ(t->nwarn, 0);
-    CHECK(strcmp(t->name, "Windows 95 Classic") == 0);
+    CHECK(strcmp(t->name, "Redmond 95") == 0);
     CHECK_EQ(t->metrics.btn_w, 16);
     CHECK_EQ(t->metrics.btn_h, 14);
     /* Classic95 must define every part (it is the root of all themes);
@@ -152,7 +152,7 @@ static void test_theme_classic(void)
 /* Every bundled theme must load without warnings. */
 static void test_theme_bundled(void)
 {
-    static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/SLATE" };
+    static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE" };
     int i;
     for (i = 0; i < (int)(sizeof(dirs) / sizeof(dirs[0])); i++) {
         RtTheme *t = rt_theme_load(dirs[i]);
@@ -165,6 +165,30 @@ static void test_theme_bundled(void)
         CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0);
         rt_theme_free(t);
     }
+}
+
+/* [SysColors]: the colours a theme sets while it runs */
+static void test_theme_syscolors(void)
+{
+    rt_u8 idx[RT_SYS_COUNT];
+    RtColor rgb[RT_SYS_COUNT];
+    RtTheme *t = rt_theme_load("themes/WIN98");
+    int i, n;
+    CHECK(t != 0);
+    if (t) {
+        CHECK_EQ(rt_theme_syscolors(t, idx, rgb), 0);
+        rt_theme_free(t);
+    }
+    t = rt_theme_load("themes/WINME");
+    CHECK(t != 0);
+    if (!t)
+        return;
+    n = rt_theme_syscolors(t, idx, rgb);
+    CHECK_EQ(n, RT_SYS_COUNT);
+    for (i = 0; i < n && idx[i] != 15; i++)     /* BtnFace */
+        ;
+    CHECK(i < n && rgb[i] == RT_RGB(212, 208, 200));
+    rt_theme_free(t);
 }
 
 static void test_theme_errors(void)
@@ -371,6 +395,7 @@ int main(int argc, char **argv)
     test_theme_classic();
     test_theme_errors();
     test_theme_bundled();
+    test_theme_syscolors();
     test_theme_bitmap();
     test_layout();
     test_glyphs();
