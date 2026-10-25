@@ -66,18 +66,24 @@ static BOOL themed_control(HWND hwnd)
     return parent && ctl_class(parent) == CLS_DIALOG;
 }
 
-/* Windows whose own scroll bars are themed: themed top-level windows, and
- * child windows in dialogs (list boxes, multi-line edit controls). */
+/* Windows whose own scroll bars are themed: themed top-level windows,
+ * child windows in dialogs (list boxes, multi-line edit controls) and the
+ * other child windows of a themed top-level window (panes, tree views). */
 static BOOL window_themed(HWND hwnd)
 {
     DWORD style = GetWindowLong(hwnd, GWL_STYLE);
     HWND parent;
+    int n;
     if (!(style & (WS_VSCROLL | WS_HSCROLL)))
         return FALSE;
     if (!(style & WS_CHILD))
         return nc_wants(hwnd);
     parent = GetParent(hwnd);
-    return parent && ctl_class(parent) == CLS_DIALOG;
+    if (parent && ctl_class(parent) == CLS_DIALOG)
+        return TRUE;
+    for (n = 0; parent && n < 16 && (GetWindowLong(parent, GWL_STYLE) & WS_CHILD); n++)
+        parent = GetParent(parent);
+    return parent && nc_wants(parent);
 }
 
 BOOL scroll_wants(HWND hwnd, UINT msg, WPARAM wp)
@@ -99,13 +105,15 @@ BOOL scroll_wants(HWND hwnd, UINT msg, WPARAM wp)
 }
 
 /* Window scroll bars in window coordinates (measured: the bars overlap
- * the client edge by one pixel). */
+ * the window's border by one pixel; without a border they start at the
+ * client area). */
 static void nc_bars(HWND hwnd, RECT FAR *v, RECT FAR *h)
 {
     DWORD style = GetWindowLong(hwnd, GWL_STYLE);
     RECT wr, cr;
     POINT pt;
     int l, t, r, b;
+    int o = (style & (WS_BORDER | WS_DLGFRAME | WS_THICKFRAME)) ? 1 : 0;
     GetWindowRect(hwnd, &wr);
     GetClientRect(hwnd, &cr);
     pt.x = pt.y = 0;
@@ -117,9 +125,9 @@ static void nc_bars(HWND hwnd, RECT FAR *v, RECT FAR *h)
     SetRectEmpty(v);
     SetRectEmpty(h);
     if (style & WS_VSCROLL)
-        SetRect(v, r, t - 1, r + GetSystemMetrics(SM_CXVSCROLL), b + 1);
+        SetRect(v, r, t - o, r + GetSystemMetrics(SM_CXVSCROLL), b + o);
     if (style & WS_HSCROLL)
-        SetRect(h, l - 1, b, r + 1, b + GetSystemMetrics(SM_CYHSCROLL));
+        SetRect(h, l - o, b, r + o, b + GetSystemMetrics(SM_CYHSCROLL));
 }
 
 static BOOL inside(const RECT FAR *r, int x, int y, int w, int h)

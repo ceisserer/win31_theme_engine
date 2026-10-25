@@ -27,7 +27,8 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * **Menus:** grey Win95 menu bar and popup menus with 3D border, highlight bar, MS Sans Serif text (USER measures
   with that font too, so widths and mnemonic underlines fit), embossed disabled items, etched separators, theme
   check marks and sub-menu arrows, the system menu; unloading restores the 3.1 menus.
-* **Scroll bars and combo boxes:** window scroll bars (top-level windows, list boxes), scroll bar controls and
+* **Scroll bars and combo boxes:** window scroll bars (top-level windows, list boxes, child windows of themed windows with and
+  without a border), scroll bar controls and
   drop-down list combo boxes have Win95 arrow buttons (pressed and released), dither track and raised thumb;
   also while scrolling (`SetScrollPos`, tracking loops).
 * **Safety:** the `SysErrorBox` emergency path (an empty floppy drive triggers the system error box: all patches are
@@ -66,7 +67,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 ## Known gaps
 
 * Controls are themed only inside dialogs (`#32770`); controls in ordinary windows keep the 3.1 look (window
-  scroll bars of top-level windows are themed).
+  scroll bars of themed windows and their child windows are themed).
 * Combo boxes: only drop-down lists (`CBS_DROPDOWNLIST`); simple and drop-down (edit) combo boxes keep the 3.1 look.
 * Not yet themed: MDI children, the desktop, icon titles, the task list.
 * A disabled menu item that is selected is embossed on the highlight bar (Win95 draws it flat grey).
