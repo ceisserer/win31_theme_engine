@@ -1,0 +1,25 @@
+#! --gallery styles --boot 50
+# Caption smoke test: GALLERY window styles, maximize/restore, move, close,
+# unload. Coordinates assume 640x480 and GALLERY's default window positions.
+shot 01-styles
+# maximize Gallery, then restore it (buttons of a maximized window are at the top right)
+click 348 33
+3
+shot 02-maximized
+click 608 9
+3
+shot 03-restored
+# move Gallery by its caption
+drag 150 33 250 133
+3
+shot 04-moved
+# close "No min/max" with the theme's close button
+click 586 233
+3
+shot 05-closed
+# unload: GALLERY File > Unload engine (closes RETHEME.EXE's window)
+mon sendkey alt-f
+1
+mon sendkey u
+3
+shot 06-unloaded

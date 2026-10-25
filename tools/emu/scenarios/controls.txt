@@ -1,0 +1,23 @@
+#! --gallery dialog --boot 55
+# Controls test: GALLERY's controls dialog, toggling, a held push button,
+# then a message box (System font swapped for the theme font).
+shot 01-dialog
+# toggle "Normal" check box, select "Green"
+click 88 128
+1
+click 166 220
+1
+shot 02-toggled
+# hold Cancel down, then release (closes the dialog)
+move 228 347
+mon mouse_button 1
+1
+shot 03-pressed
+mon mouse_button 0
+2
+# File > Message box
+mon sendkey alt-f
+1
+mon sendkey m
+2
+shot 04-msgbox

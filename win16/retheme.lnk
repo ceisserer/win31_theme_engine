@@ -1,0 +1,7 @@
+# wlink directives for RETHEME.DLL (see win16.mk)
+system windows_dll
+option oneautodata, stack=0, heapsize=1k
+option description 'Retheme16 theme engine'
+segment type code preload fixed
+segment type data preload fixed
+library toolhelp

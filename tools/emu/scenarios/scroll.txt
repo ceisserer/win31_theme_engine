@@ -1,0 +1,42 @@
+#! --gallery dialog --boot 55
+# Scroll bars and combo boxes: the dialog's scroll bar control, the list
+# box's scroll bar, the drop-down list, and GALLERY's window scroll bars.
+# Arrows are clicked (one step each, shorter than USER's auto-repeat delay)
+# so the result does not depend on timing; the held arrow is on GALLERY's
+# window scroll bar, which GALLERY ignores (the thumb does not move).
+shot 01-dialog
+# scroll bar control: three clicks on the right arrow
+click 480 241
+1
+click 480 241
+1
+click 480 241
+1
+move 400 300
+1
+shot 02-control-clicked
+# combo box (drop-down list): open the list, close it again
+click 470 173
+2
+shot 03-combo-open
+click 470 173
+2
+shot 04-combo-closed
+# list box scroll bar: one click on its down arrow
+click 373 220
+1
+move 400 300
+1
+shot 05-list-scrolled
+# close the dialog (Cancel), then hold GALLERY's down arrow
+click 228 347
+2
+move 368 182
+mon mouse_button 1
+1
+shot 06-window-arrow-pressed
+mon mouse_button 0
+1
+move 300 120
+1
+shot 07-window-arrow-released

@@ -1,0 +1,42 @@
+#! --gallery "" --boot 50
+# Menus: menu bar, popups with check mark, disabled item, sub-menu,
+# separator; keyboard navigation.
+mon sendkey alt-e
+2
+shot 01-edit-menu
+mon sendkey down
+1
+shot 02-disabled-selected
+mon sendkey down
+1
+mon sendkey right
+2
+shot 03-submenu
+mon sendkey esc
+1
+mon sendkey esc
+1
+mon sendkey esc
+1
+mon sendkey alt-f
+2
+shot 04-file-menu
+mon sendkey esc
+1
+mon sendkey esc
+1
+shot 05-closed
+# system menu
+mon sendkey alt-spc
+2
+shot 06-system-menu
+mon sendkey esc
+1
+mon sendkey esc
+1
+# unload: the menu bar goes back to the System font and USER's colours
+mon sendkey alt-f
+1
+mon sendkey u
+3
+shot 07-unloaded

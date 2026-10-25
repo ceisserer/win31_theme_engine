@@ -1,0 +1,47 @@
+; SETUP.INF of Retheme16 for Win16Setup (external/win16setup/README.md).
+; tools/release/mkrelease.py fills in the version and the theme list; the
+; packer adds [Files].
+
+[Setup]
+Product=Retheme16
+Version=@VERSION@
+DefaultDir=C:\RETHEME
+Tagline=The Windows 95 look for Windows 3.1 - version %VERSION%
+Welcome=Retheme16 %VERSION% gives Windows 3.1 the look of Windows 95.\n\nSetup copies the files into the directory below.
+WelcomeInstalled=Retheme16 %VERSION% is installed in %DIR%.\n\nChoose a theme and the options below and click Install, or click Remove to remove Retheme16.
+
+[Choice]
+Label=T&heme:
+Switch=T
+Default=WIN95
+NameFrom=THEMES\%ITEM%\THEME.INI,Theme,Name
+Preview=THEMES\%ITEM%\PREVIEW.BMP
+@THEMES@
+
+[Ini]
+1=%DIR%\RETHEME.INI,Engine,Theme,%DIR%\THEMES\%CHOICE%
+
+[Autostart]
+Program=RETHEME.EXE
+
+[Group]
+Name=Retheme16
+1=%DIR%\RETHEME.EXE,Retheme16
+2=%DIR%\GALLERY.EXE,Theme Gallery
+3=%DIR%\SETUP.EXE,Retheme16 Setup
+4=NOTEPAD.EXE %DIR%\README.TXT,Read Me,NOTEPAD.EXE
+
+[StartNow]
+Program=RETHEME.EXE
+Show=minimized
+
+[Stop]
+Window=Retheme16
+Wait=RETHEME,RTLOADER
+
+[Running]
+1=GALLERY,the Theme Gallery
+
+[Uninstall]
+1=RETHEME.INI
+2=RETHEME.LOG
