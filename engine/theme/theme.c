@@ -191,6 +191,27 @@ static void load_colors(RtTheme *t, const RtIni *ini)
     }
 }
 
+/* [SysColors]: <system colour name>=r,g,b */
+static void load_syscolors(RtTheme *t, const RtIni *ini)
+{
+    int sec = rt_ini_find(ini, "SysColors");
+    int i, n;
+    RtColor rgb;
+    if (sec < 0)
+        return;
+    for (i = 0; i < ini->secs[sec].count && t->nsys < RT_SYS_COUNT; i++) {
+        const RtIniKey *k = &ini->keys[ini->secs[sec].first + i];
+        n = find_name(sys_names, RT_SYS_COUNT, k->key);
+        if (n < 0 || !parse_rgb(k->val, &rgb)) {
+            warn(t, "bad system colour", k->key);
+            continue;
+        }
+        t->sys_idx[t->nsys] = (rt_u8)n;
+        t->sys_rgb[t->nsys] = rgb;
+        t->nsys++;
+    }
+}
+
 /* ---- fonts ---- */
 
 static void load_fonts(RtTheme *t, const RtIni *ini)
@@ -788,6 +809,7 @@ RtTheme *rt_theme_load(const char *dir)
     t->sys_colors = !(s && rt_stricmp(s, "Fixed") == 0);
 
     load_metrics(t, &L.ini);
+    load_syscolors(t, &L.ini);
     load_colors(t, &L.ini);
     resolve_colors(t);          /* recolouring of images needs resolved colours */
     load_fonts(t, &L.ini);
@@ -843,6 +865,23 @@ void rt_theme_syscolor_changed(RtTheme *t)
             if (t->images[i].recolor)
                 build_image(t, &t->images[i]);
     }
+}
+
+int rt_theme_syscolors(const RtTheme *t, rt_u8 *idx, RtColor *rgb)
+{
+    int n = 0, i, j;
+    if (!t)
+        return 0;
+    n = rt_theme_syscolors(t->base, idx, rgb);
+    for (i = 0; i < t->nsys; i++) {
+        for (j = 0; j < n && idx[j] != t->sys_idx[i]; j++)
+            ;
+        idx[j] = t->sys_idx[i];
+        rgb[j] = t->sys_rgb[i];
+        if (j == n)
+            n++;
+    }
+    return n;
 }
 
 const RtOp *rt_theme_find(const RtTheme *t, int part, int state, const RtTheme **owner)

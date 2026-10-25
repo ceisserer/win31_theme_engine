@@ -47,13 +47,26 @@ char *rt_file_load(const char *path, rt_u32 *len)
     return buf;
 }
 
+/* Windows 3.1 has no COLOR_3DDKSHADOW / COLOR_3DLIGHT: a theme's
+ * [SysColors] can give them, else the Win95 defaults (black, and the
+ * button face). */
+static BOOL    have_win95[2];
+static RtColor win95[2];
+
+void rt16_set_win95_color(int index, RtColor c, BOOL on)
+{
+    int i = index == RT_SYS_3DDKSHADOW ? 0 : index == RT_SYS_3DLIGHT ? 1 : -1;
+    if (i >= 0) {
+        have_win95[i] = on;
+        win95[i] = c;
+    }
+}
+
 RtColor rt_syscolor(int index)
 {
-    /* Windows 3.1 has no COLOR_3DDKSHADOW / COLOR_3DLIGHT: use the Win95
-     * defaults (black, and the button face). */
     if (index == RT_SYS_3DDKSHADOW)
-        return RT_RGB(0, 0, 0);
+        return have_win95[0] ? win95[0] : RT_RGB(0, 0, 0);
     if (index == RT_SYS_3DLIGHT)
-        return (RtColor)GetSysColor(COLOR_BTNFACE);
+        return have_win95[1] ? win95[1] : (RtColor)GetSysColor(COLOR_BTNFACE);
     return (RtColor)GetSysColor(index);
 }

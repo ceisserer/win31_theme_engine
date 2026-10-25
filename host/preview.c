@@ -42,6 +42,16 @@ int main(int argc, char **argv)
     }
     if (t->log[0])
         fprintf(stderr, "%s: %u warning(s):\n%s", argv[1], t->nwarn, t->log);
+    {
+        /* the system colours the engine sets for the theme */
+        rt_u8 idx[RT_SYS_COUNT];
+        RtColor rgb[RT_SYS_COUNT];
+        int n = rt_theme_syscolors(t, idx, rgb);
+        for (i = 0; i < n; i++)
+            host_set_syscolor(idx[i], rgb[i]);
+        if (n)
+            rt_theme_syscolor_changed(t);
+    }
     if (argc == 3) {
         for (i = 0; i < SCENE_COUNT; i++)
             rc |= render(t, argv[2], i);
