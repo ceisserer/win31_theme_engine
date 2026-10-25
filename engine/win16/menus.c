@@ -10,8 +10,9 @@
  *   - check marks and sub-menu arrows: transparent blits (ROP_MASKBLT) from
  *     USER's bitmap strip; a disabled item that is selected is drawn into a
  *     memory DC with GrayString and blitted the same way;
- *   - the popup border: FastWindowFrame; the menu bar ends with a 1-pixel
- *     black line.
+ *   - the popup border: FastWindowFrame, then a 1-pixel shadow line below
+ *     and right of it (the popup window is one pixel larger than the
+ *     frame); the menu bar ends with a 1-pixel black line.
  * Each of these is replaced by the theme's part on menu DCs (the menu bar
  * area of the window being painted, or a visible popup menu window).
  *
@@ -325,6 +326,12 @@ BOOL menu_gdi(int op, HDC hdc, int x, int y, int w, int h, LPCSTR str, int len, 
     switch (op) {
     case GOP_PATBLT: {
         COLORREF brush = (COLORREF)extra;
+        /* USER 3.1 makes a popup one pixel wider and taller than its frame
+         * and draws a shadow line there; the theme's frame covers it */
+        if (kind == MD_POPUP && ((h == 1 && y == a.bottom - 1) || (w == 1 && x == a.right - 1))) {
+            done = TRUE;
+            break;
+        }
         if (h == 1 && w > 0) {
             if (kind == MD_BAR && w >= (a.right - a.left) - 2) {
                 /* the line below the menu bar: Win95 has none */
