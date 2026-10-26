@@ -31,6 +31,7 @@ typedef struct OneShot {
 
 static OneShot oneshot[MAX_ONESHOT];
 static int     noneshot;
+static int     nactive;     /* OneShotProc frames on some task's stack */
 
 LRESULT CALLBACK __export __loadds OneShotProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -128,6 +129,10 @@ LRESULT CALLBACK __export __loadds OneShotProc(HWND hwnd, UINT msg, WPARAM wp, L
         oneshot[i] = oneshot[i + 1];
     noneshot--;
 
+    /* The original procedure may yield (a button's WM_COMMAND opening a
+     * dialog, a scroll bar's tracking loop) while this frame waits to
+     * return into the DLL: RtStop must not let the DLL go meanwhile. */
+    nactive++;
     r = CallWindowProc((FARPROC)o.orig, hwnd, msg, wp, lp);
     /* Normally msg == o.msg. If another message got there first, the job
      * still has to end here if it armed patches. */
@@ -136,6 +141,7 @@ LRESULT CALLBACK __export __loadds OneShotProc(HWND hwnd, UINT msg, WPARAM wp, L
         post_process(&o, &r);
     if (msg == WM_NCDESTROY)
         ws_forget(hwnd);    /* post-processing may have created state again */
+    nactive--;
     return r;
 }
 
@@ -274,8 +280,9 @@ void hooks_remove(void)
     hk_callwnd = hk_getmsg = 0;
 }
 
-/* Pending one-shot subclasses at unload time (should be none). */
+/* One-shot subclasses not yet run or still running: while there are any,
+ * the DLL must stay loaded. */
 int hooks_pending(void)
 {
-    return noneshot;
+    return noneshot + nactive;
 }
