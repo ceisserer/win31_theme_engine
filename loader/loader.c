@@ -68,8 +68,11 @@ LRESULT CALLBACK __export WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;       /* stay an icon */
     case WM_CLOSE:
         if (rt_stop && !rt_stop()) {
-            MessageBox(hwnd, "The theme engine is busy. Try again in a moment.", "Retheme16",
-                       MB_OK | MB_ICONINFORMATION);
+            /* a program that sent WM_CLOSE (THEMES.EXE) sees that the
+             * window is still there and tells the user itself */
+            if (!InSendMessage())
+                MessageBox(hwnd, "The theme engine is busy. Try again in a moment.", "Retheme16",
+                           MB_OK | MB_ICONINFORMATION);
             return 0;
         }
         rt_stop = 0;

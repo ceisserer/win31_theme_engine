@@ -6,6 +6,12 @@
  * to RETHEME.INI ([Engine] Theme=), stops the running engine (WM_CLOSE to
  * the loader's window, then waits until RETHEME.EXE and RETHEME.DLL are
  * unloaded) and starts RETHEME.EXE again; no restart of Windows is needed.
+ *
+ * Apply runs from a posted message, not from the button's or list box's
+ * notification: those controls are themed, so their window procedure can be
+ * wrapped in the engine's one-shot subclass, and the engine cannot stop (or
+ * would crash on the way back into the unloaded DLL) while that frame waits
+ * below us on the stack.
  */
 #include <windows.h>
 #include <dos.h>
@@ -14,6 +20,7 @@
 
 #define MAX_THEMES  32
 #define WAIT_MS     10000
+#define WM_APPLY    (WM_USER + 100)
 
 static HINSTANCE inst;
 static char home[144];              /* directory of THEMES.EXE, with '\' */
@@ -164,25 +171,30 @@ static void pump(void)
     }
 }
 
-/* Stops the engine if it runs; FALSE if it is still loaded. */
-static BOOL stop_engine(void)
+/* Stops the engine if it runs: 1 when it is unloaded, 0 when it refused
+ * (a message it is handling is still in progress somewhere), -1 when it
+ * did not unload in time. */
+static int stop_engine(void)
 {
     HWND w = FindWindow("Retheme16", NULL);
     DWORD t0;
-    if (w)
+    if (w) {
         SendMessage(w, WM_CLOSE, 0, 0);
+        if (IsWindow(w))
+            return 0;
+    }
     t0 = GetTickCount();
     while (engine_loaded() && GetTickCount() - t0 < WAIT_MS) {
         pump();
         Yield();
     }
-    return !engine_loaded();
+    return engine_loaded() ? -1 : 1;
 }
 
 static void apply(HWND dlg)
 {
     char path[200], exe[160];
-    int i = selected(dlg);
+    int i = selected(dlg), stopped;
     HCURSOR old;
     if (i < 0)
         return;
@@ -191,9 +203,13 @@ static void apply(HWND dlg)
     WritePrivateProfileString(NULL, NULL, NULL, ini);     /* flush */
     EnableWindow(GetDlgItem(dlg, IDC_APPLY), FALSE);
     old = SetCursor(LoadCursor(NULL, IDC_WAIT));
-    if (!stop_engine()) {
+    stopped = stop_engine();
+    if (stopped <= 0) {
         SetCursor(old);
-        MessageBox(dlg, "The theme engine is busy and could not be stopped. Try again in a moment.",
+        MessageBox(dlg, stopped == 0
+                   ? "The theme engine is busy: a program is in the middle of something it themes. "
+                     "Try again in a moment. The new theme is used when the engine starts next."
+                   : "The theme engine is busy and could not be stopped. Try again in a moment.",
                    "Retheme16 Themes", MB_OK | MB_ICONINFORMATION);
     } else {
         wsprintf(exe, "%sRETHEME.EXE", (LPSTR)home);
@@ -223,6 +239,9 @@ BOOL CALLBACK __export ThemesProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
         }
         return TRUE;
     }
+    case WM_APPLY:
+        apply(dlg);
+        return TRUE;
     case WM_QUERYDRAGICON:      /* the task button's icon (NewShell16) */
         return (BOOL)LoadIcon(inst, "RETHEME");
     case WM_COMMAND:
@@ -232,11 +251,11 @@ BOOL CALLBACK __export ThemesProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
                 load_preview(selected(dlg));
                 InvalidateRect(GetDlgItem(dlg, IDC_PREVIEW), NULL, FALSE);
             } else if (HIWORD(lp) == LBN_DBLCLK) {
-                apply(dlg);
+                PostMessage(dlg, WM_APPLY, 0, 0);
             }
             return TRUE;
         case IDC_APPLY:
-            apply(dlg);
+            PostMessage(dlg, WM_APPLY, 0, 0);
             return TRUE;
         case IDCANCEL:
             EndDialog(dlg, 0);
