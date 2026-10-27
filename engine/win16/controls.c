@@ -33,6 +33,8 @@ typedef struct Ctx {
     BYTE   dropped;         /* USER drew something we dropped: overpaint */
     BYTE   have_box;
     BYTE   have_text;
+    BYTE   have_top;
+    rt_s16 top;             /* group box: top of the frame USER drew */
     RtRect box;             /* check/radio box, client coordinates */
     RtRect text;            /* group box caption; disabled text (GrayString output) */
 } Ctx;
@@ -343,13 +345,33 @@ BOOL ctl_gdi(int op, HDC hdc, int x, int y, int w, int h, LPCSTR str, int len)
         return FALSE;
     case CK_GROUP:
         if (op == GOP_TEXT) {
-            DWORD ext = GetTextExtent(hdc, str, len);
-            rt_rect_set(&c->text, x - 1, y, x + LOWORD(ext) + 1, y + HIWORD(ext));
+            DWORD ext;
+            RtRect t;
+            if (len <= 0)
+                return FALSE;
+            ext = GetTextExtent(hdc, str, len);
+            rt_rect_set(&t, x - 1, y, x + LOWORD(ext) + 1, y + HIWORD(ext));
+            /* a caption with a mnemonic may come in pieces */
+            if (c->have_text) {
+                if (t.left > c->text.left) t.left = c->text.left;
+                if (t.top > c->text.top) t.top = c->text.top;
+                if (t.right < c->text.right) t.right = c->text.right;
+                if (t.bottom < c->text.bottom) t.bottom = c->text.bottom;
+            }
+            c->text = t;
             c->have_text = 1;
             c->dropped = 1;
             return FALSE;
         }
         if (op == GOP_LINE || op == GOP_PIXEL || op == GOP_FRAME || (op == GOP_PATBLT && (w <= 2 || h <= 2))) {
+            /* the mnemonic underline of the caption stays */
+            if (op == GOP_PATBLT && c->have_text && x >= c->text.left && x + w <= c->text.right
+                && y >= c->text.top && y + h <= c->text.bottom + 2)
+                return FALSE;
+            if (!c->have_top || y < c->top) {
+                c->top = (rt_s16)y;
+                c->have_top = 1;
+            }
             c->dropped = 1;
             return TRUE;
         }
@@ -467,7 +489,13 @@ static void paint_button(const Ctx *c)
         GetTextMetrics(hdc, &tm);
         if (f)
             SelectObject(hdc, old);
-        frame.top = (rt_s16)(frame.top + tm.tmHeight / 2);
+        /* USER puts the frame half a line down only for a caption: a group
+         * box without one is a plain frame, often with a static heading just
+         * inside its top edge */
+        if (c->have_text)
+            frame.top = (rt_s16)(frame.top + tm.tmHeight / 2);
+        else if (c->have_top && c->top > frame.top && c->top < frame.bottom)
+            frame.top = c->top;
         render(&s, RT_PART_GROUPBOX, enabled ? RT_ST_NORMAL : RT_ST_DISABLED, &frame,
                c->have_text ? &c->text : 0, 0, 0);
         break;
