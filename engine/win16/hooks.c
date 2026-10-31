@@ -231,6 +231,7 @@ static void dispatch_posted(MSG FAR *msg)
 {
     if (nc_close_filter(msg))
         return;
+    menu_hover(msg);
     if (msg->message == WM_NCLBUTTONDOWN && (msg->wParam == HTREDUCE || msg->wParam == HTZOOM)
         && nc_wants(msg->hwnd) && !g_track_hwnd) {
         if (oneshot_push(msg->hwnd, WM_NCLBUTTONDOWN, JOB_TRACK, msg->wParam, msg->lParam)) {
