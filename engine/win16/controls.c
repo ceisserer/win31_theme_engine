@@ -400,6 +400,30 @@ static void render(RtSurface FAR *s, int part, int state, const RtRect FAR *rc, 
     rt_render(g_theme, s, &q);
 }
 
+/* The focus rectangle of a push button: the theme's Focus part (its Inset
+ * places it in the button), grown where needed so that it runs around the
+ * label and never through it (Windows 3.1 buttons can be lower than the
+ * inset expects). */
+static void focus_around(RtSurface FAR *s, const RtRect FAR *rc, LPCSTR text)
+{
+    RtDrawReq q;
+    RtRect box;
+    _fmemset(&q, 0, sizeof(q));
+    q.part = RT_PART_PUSHBUTTONTEXT;
+    q.state = RT_ST_NORMAL;     /* where the label is when not pressed: the
+                                 * rectangle stays put while the button is held */
+    q.rc = *rc;
+    q.flags = RT_RQ_PREFIX | RT_RQ_CENTER;
+    q.text = text;
+    q.textlen = -1;
+    if (text[0] && rt_text_box(g_theme, s, &q, &box)) {
+        rt_rect_inset(&box, -1, -1, -1, -1);    /* one pixel of air */
+        render(s, RT_PART_FOCUS, RT_ST_NORMAL, rc, &box, 0, RT_RQ_ENCLOSE);
+    } else {
+        render(s, RT_PART_FOCUS, RT_ST_NORMAL, rc, 0, 0, 0);
+    }
+}
+
 static void paint_button(const Ctx *c)
 {
     HWND hwnd = c->hwnd;
@@ -431,11 +455,8 @@ static void paint_button(const Ctx *c)
         GetWindowText(hwnd, text, sizeof(text));
         render(&s, RT_PART_PUSHBUTTON, st, &rc, 0, 0, 0);
         render(&s, RT_PART_PUSHBUTTONTEXT, ts, &rc, 0, text, RT_RQ_PREFIX | RT_RQ_CENTER);
-        if (GetFocus() == hwnd && enabled) {
-            RtRect f = rc;
-            rt_rect_inset(&f, 4, 4, 4, 4);
-            render(&s, RT_PART_FOCUS, RT_ST_NORMAL, &f, 0, 0, 0);
-        }
+        if (GetFocus() == hwnd && enabled)
+            focus_around(&s, &rc, text);
         break;
     }
     case CK_CHECK:

@@ -173,6 +173,7 @@ const RtOp *rt_theme_find(const RtTheme *t, int part, int state, const RtTheme *
 #define RT_RQ_LEFT      0x0010  /* text alignment requested by the caller (Align=Auto) */
 #define RT_RQ_CENTER    0x0020
 #define RT_RQ_RIGHT     0x0040
+#define RT_RQ_ENCLOSE   0x0080  /* focus: req.hole (the label) must be inside the rectangle; no clipping */
 
 typedef struct RtDrawReq {
     rt_u8       part;
@@ -187,6 +188,9 @@ typedef struct RtDrawReq {
 /* Draws the request. Returns 1 if the theme defines the part (it was drawn),
  * 0 if not (the caller lets USER draw it). */
 int rt_render(const RtTheme *t, RtSurface *s, const RtDrawReq *req);
+/* The box the first Text op of (part, state) would draw req's text in.
+ * Returns 0 if the part has no text op or req no text. */
+int rt_text_box(const RtTheme *t, RtSurface *s, const RtDrawReq *req, RtRect *out);
 
 /* If (part, state) is drawn by a plain Fill op, stores its colour in *out
  * and returns 1 (the engine uses this for brushes it hands to Windows,
