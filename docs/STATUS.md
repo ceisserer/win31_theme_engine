@@ -1,6 +1,6 @@
 # Status
 
-Last update: 2026-10-25.
+Last update: 2026-11-03.
 
 ## Verified on Windows (QEMU)
 
@@ -11,6 +11,7 @@ Configurations:
 | Windows 3.1 (3.10.103), US English, retail and SDK debug build | 264 016 bytes | VGA 640×480×16 | `tests/emu/golden/win31` |
 | Windows 3.1, German | 264 832 bytes | VGA 640×480×16 | `tests/emu/golden/win31de` |
 | Windows 3.1 + VBE SVGA driver (vbesvga.drv) | 264 016 bytes | 640×480×256 | spot checks |
+| Windows 3.1 + VBE SVGA driver (vbesvga.drv 1.0 beta 4), theme `WINXP` | 264 016 bytes | 800×600×65536 (16 bit) | `tests/emu/golden/win31hc-xp` |
 | Windows for Workgroups 3.11 (pre-installed) | 3.11 | VGA 640×480×16 | spot checks |
 
 All in 386 Enhanced mode. Scenarios in `tools/emu/scenarios` (`caption`, `controls`, `menus`, `scroll`) run
@@ -40,6 +41,14 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   (`tools/emu/test_setup.py`).
 * **Themes:** `SLATE` (bitmaps with colour key, close button on the left, theme dialog colour) works at 16 and 256
   colours. Colours outside the system palette are dithered by GDI (expected; documented for theme authors).
+* **RedmondExperience (`WINXP`):** the Windows XP "Luna" look at 800×600 with 65536 colours: blue caption with
+  rounded top corners (they take the desktop colour), round caption buttons with the red close button, rounded
+  push buttons with the blue glow of the default button, green check marks and radio dots, light blue scroll bars
+  and combo buttons, white menus with a grey border, the Luna colour scheme as system colours. Also runs at 256 and
+  16 colours (nearest colours; the theme's own literal colours are dithered there). With NewShell16 as the shell the
+  taskbar and Start menu follow (`[Shell] Style=XP`).
+* **System colours on 256-colour displays:** `[SysColors]` are set to the nearest solid colours with 256 colours
+  too (before: only with 16), so the Windows ME and XP schemes are not dithered.
 
 ## Implemented
 
@@ -51,6 +60,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Theme layout of the non-client area (Win95 button rules, configurable layout) | `engine/geom/nclayout.c` | host tests |
 | USER 3.1 caption model (measured: bar `SM_CYSIZE` high, boxes `SM_CXSIZE+1` wide, dialog frame `SM_CXDLGFRAME` + border, menu bar `SM_CYMENU` + line) and theme→USER point mapping | `engine/geom/nclayout.c`, `engine/win16/ncpaint.c` | Windows 3.1 (US, German), WfW 3.11 |
 | Default theme `WIN95` "Redmond 95" (procedural only); `WIN98` "Redmond 98" and `WINME` "Redmond ME" (derived; `WINME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
+| `WINXP` "RedmondExperience": Windows XP Luna look, self-contained (no `Base=`, one theme in memory), 6 24-bpp bitmaps (about 31 KB of files) drawn by a generator, `[Shell] Style=XP` for NewShell16 | `themes/WINXP`, `tools/gen_winxp.py` | previews, golden images, Windows 3.1 at 16 bit |
 | Host tools: software backend, PNG writer, previewer, test suite | `host/` | — |
 | Win16 runtime: patch engine (alias selectors, JMP FAR, arm/disarm per reason, suspend/resume, permanent patches), hooks, one-shot subclassing with post-processing of the result, per-window state, log ring buffer, trace levels 1/2 | `engine/win16/` | Windows |
 | Interceptors: `PatBlt`, `BitBlt`, `StretchBlt`, `ExtTextOut`, `TextOut`, `Rectangle`, `LineTo`, `Polyline`, `SetPixel`, `FastWindowFrame`, `GetTextExtent`, `GetTextExtentPoint`, `PtInRect`, `SysErrorBox`, `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` | `engine/win16/intercept.c`, `scroll.c` | Windows |
@@ -78,6 +88,12 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * Permanent patches still missing from the plan: hook-API patches, `CallWindowProc`, `DeleteObject`, `RemoveProp`.
 * Calibration (plan 4.3), trace replay on the host, `PROFILER.EXE`: not started.
 * Not yet tested: WfW 3.11 German, large fonts, Standard mode, real application matrix (VB3, Office 4.3 ...).
+* `WINXP`: the caption keeps the height USER gives it (Windows XP's is taller); no hot-tracking (buttons do not
+  light up under the mouse); the rounded frame corners are painted in the desktop colour, so they show over a
+  wallpaper or another window; it is made for 15/16/24-bit displays.
+* The emulator golden sets `win31` and `win31de` were made from an earlier Windows 3.1 image: on an image freshly
+  made with `mkwin31.py` the dialog text differs in the `controls`, `menus` and `scroll` scenarios (the same with
+  the engine of 0.1.0); they need regenerating from one reference image.
 
 ## Next steps
 

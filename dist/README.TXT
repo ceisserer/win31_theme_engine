@@ -3,10 +3,12 @@ Retheme16 @VERSION@
 
 Retheme16 gives Windows 3.1 and Windows for Workgroups 3.11 the look of
 Windows 95: title bars with the Windows 95 buttons, 3D dialog controls,
-grey menus and Windows 95 scroll bars. Other looks come as themes.
+grey menus and Windows 95 scroll bars. Other looks come as themes, among
+them RedmondExperience, the blue look of Windows XP (best with a display
+driver for 65536 or more colours).
 
 Requirements: Windows 3.1 or Windows for Workgroups 3.11, Standard or
-386 Enhanced mode, 16 or 256 colours.
+386 Enhanced mode, 16, 256 or more colours.
 
 
 INSTALLING
@@ -23,7 +25,7 @@ Silent installation (for scripts and network installs):
   SETUP /S [/D=C:\RETHEME] [/T=WIN95] [/NOLOAD] [/NOGROUP] [/NOSTART]
 
   /D=dir      installation directory
-  /T=theme    theme directory name: WIN95, WIN98, WINME or SLATE
+  /T=theme    theme directory name: WIN95, WIN98, WINME, WINXP or SLATE
   /NOLOAD     do not start Retheme16 with Windows
   /NOGROUP    no Program Manager group
   /NOSTART    do not start Retheme16 after installing

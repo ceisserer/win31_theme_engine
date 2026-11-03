@@ -28,7 +28,7 @@ Priority: **R** = required, **S** = strongly recommended, **O** = optional.
 | ImageMagick | Screenshot comparison, image conversion | apt | O |
 | NASM | Small assembly stubs if inline asm is not enough | apt | O |
 | 86Box | Cycle-accurate PC emulator for real display drivers and timing | GitHub release | S |
-| vbesvga.drv | Generic VBE SVGA driver for Windows 3.1: 256-colour / high-colour tests in QEMU (test images only, not redistributed) | GitHub release (download verified) | S |
+| vbesvga.drv | Generic VBE SVGA driver for Windows 3.1: 256-colour and 16-bit high-colour (65536 colours) tests in QEMU (test images only, not redistributed); needed for `WINXP`. Release `v1.0-beta4`, `vbesvga-release.zip` | GitHub release (download verified 2026-11-03) | S |
 | Ghidra (+ JDK) | Reading **USER.EXE/GDI.EXE** (your licensed copy) for geometry/profile research. NE format supported. | GitHub release | S |
 | Wine source | Behaviour reference: `uitools.c` (`DrawEdge`, `DrawFrameControl`), `nonclient.c`, `menu.c`, `scroll.c`, `*.exe16.spec` ordinals | GitHub mirror (git) | S |
 | ReactOS source | Second reference for the same | GitHub (git) | O |
@@ -43,7 +43,9 @@ Priority: **R** = required, **S** = strongly recommended, **O** = optional.
 
 ### B.0 Already provided (2026-10-25)
 
-These files are available on a private download server that the cloud environment is allowed to reach.
+These files are available on a private download server that the cloud environment is allowed to reach (checked
+again on 2026-11-03). Windows 3.1 is preferred over 3.11 for testing: the emulator images are made from the
+Windows 3.1 (3.10.103) floppies with `tools/emu/mkwin31.py`; WfW 3.11 is for compatibility checks.
 
 | File | Size | Covers |
 |---|---|---|

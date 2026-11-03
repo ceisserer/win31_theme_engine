@@ -23,6 +23,15 @@ build/host/preview themes/MYTHEME out/         # one theme; warnings are printed
 | `Base` | Parent theme (directory name). Every part the theme does not define is taken from the parent. Looked up next to the theme first, then in the installed `THEMES` directory. `WIN95` is a good base for partial themes. |
 | `ColorMode` | `System` (default): `Sys:` colours follow the Control Panel. `Fixed`: same, reserved for themes that set their own colours. |
 
+### `[Shell]`
+
+Settings for shells that draw their own taskbar and Start menu. The engine ignores this section; it is read by
+[NewShell16](https://github.com/ceisserer/NewShell16) (following `Base=`):
+
+| Key | Meaning |
+|---|---|
+| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. |
+
 ### `[Metrics]`
 
 | Key | Default | Meaning |
@@ -205,7 +214,9 @@ disabled look); `Size=w,h` (scaled, default natural size); `Offset=x,y`.
 | `Recolor` | `1`: apply `[Recolor]` |
 
 Use 16-colour bitmaps where possible: most Windows 3.x systems run at 16 or 256 colours, and GDI memory is limited
-(at most 16 images per theme).
+(at most 16 images per theme). A theme made for high-colour displays (like `WINXP`) can use 24-bpp bitmaps: GDI
+maps them to the nearest colours on 16- and 256-colour displays. Bitmaps are kept as device bitmaps, outside the
+GDI heap; their size counts against global memory only (2 bytes per pixel at 65536 colours).
 
 ### `Text`
 

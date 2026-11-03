@@ -7,7 +7,7 @@ Product=Retheme16
 Version=@VERSION@
 DefaultDir=C:\RETHEME
 Tagline=The Windows 95 look for Windows 3.1 - version %VERSION%
-Welcome=Retheme16 %VERSION% gives Windows 3.1 the look of Windows 95.\n\nSetup copies the files into the directory below.
+Welcome=Retheme16 %VERSION% gives Windows 3.1 the look of Windows 95 or Windows XP.\n\nSetup copies the files into the directory below.
 WelcomeInstalled=Retheme16 %VERSION% is installed in %DIR%.\n\nChoose a theme and the options below and click Install, or click Remove to remove Retheme16.
 
 [Choice]

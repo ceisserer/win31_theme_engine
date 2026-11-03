@@ -50,9 +50,9 @@ static void syscolors_apply(void)
     RtColor rgb[RT_SYS_COUNT];
     int i, n = rt_theme_syscolors(g_theme, idx, rgb);
     HDC hdc = GetDC(NULL);
-    /* with 16 colours Windows would dither most of them: use the nearest
-     * solid colours instead */
-    BOOL few = GetDeviceCaps(hdc, BITSPIXEL) * GetDeviceCaps(hdc, PLANES) < 8;
+    /* with 16 or 256 colours (20 of them static) Windows would dither most
+     * of them: use the nearest solid colours instead */
+    BOOL few = GetDeviceCaps(hdc, BITSPIXEL) * GetDeviceCaps(hdc, PLANES) <= 8;
     for (i = 0; i < n && few; i++)
         rgb[i] = (RtColor)GetNearestColor(hdc, (COLORREF)rgb[i]);
     ReleaseDC(NULL, hdc);
