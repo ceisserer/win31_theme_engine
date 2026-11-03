@@ -226,7 +226,9 @@ Text is centred vertically in the rectangle.
 
 ### `Focus`
 
-The dotted focus rectangle (XOR), usually with an `Inset`.
+The dotted focus rectangle (XOR). Push buttons hand it the whole button rectangle, so its `Inset` is the distance
+from the button edge (Windows 95: 4, Windows XP: 3). Where that would put the rectangle through the label (Windows
+3.1 dialogs often have lower buttons), the engine grows it to run one pixel around the label.
 
 ## 4. Limits
 

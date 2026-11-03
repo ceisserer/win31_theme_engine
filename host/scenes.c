@@ -180,8 +180,21 @@ static void button(const RtTheme *th, RtSurface *s, int l, int t, const char *st
     part_rc(th, s, RT_PART_PUSHBUTTON, st, &r);
     text(th, s, RT_PART_PUSHBUTTONTEXT, text_st, &r, str, RT_RQ_PREFIX);
     if (focus) {
-        rt_rect_inset(&r, 4, 4, 4, 4);
-        part_rc(th, s, RT_PART_FOCUS, RT_ST_NORMAL, &r);
+        /* as the engine does it (controls.c, focus_around) */
+        RtDrawReq q;
+        RtRect box;
+        req_init(&q, RT_PART_PUSHBUTTONTEXT, RT_ST_NORMAL, r.left, r.top, r.right, r.bottom);
+        q.text = str;
+        q.flags = RT_RQ_PREFIX | RT_RQ_CENTER;
+        if (rt_text_box(th, s, &q, &box)) {
+            rt_rect_inset(&box, -1, -1, -1, -1);
+            req_init(&q, RT_PART_FOCUS, RT_ST_NORMAL, r.left, r.top, r.right, r.bottom);
+            q.hole = box;
+            q.flags = RT_RQ_ENCLOSE;
+            rt_render(th, s, &q);
+        } else {
+            part_rc(th, s, RT_PART_FOCUS, RT_ST_NORMAL, &r);
+        }
     }
 }
 

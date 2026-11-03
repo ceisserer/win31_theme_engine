@@ -9,6 +9,9 @@
 * Themes can carry a `[Shell]` section for shells: `Style=XP` switches NewShell16's taskbar and Start menu to the
   same look.
 * System colours of a theme (`[SysColors]`) are snapped to solid colours on 256-colour displays too.
+* Push button focus rectangle: it no longer runs through the label of low buttons (e.g. Control Panel's Ports
+  dialog, the About box of NewShell16); with `WINXP` it sits 3 pixels inside the button as in Windows XP. The
+  theme's `[Focus] Inset` is now measured from the button edge (`WIN95`: 4).
 * Emulator tests: `regress.sh` takes `THEME=`; golden set `win31hc-xp` (800×600, 65536 colours, VBE driver).
 
 ## 0.1.0
