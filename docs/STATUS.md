@@ -94,9 +94,6 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * `WINXP`: the caption keeps the height USER gives it (Windows XP's is taller); no hot-tracking (buttons do not
   light up under the mouse); the rounded frame corners are painted in the desktop colour, so they show over a
   wallpaper or another window; it is made for 15/16/24-bit displays.
-* The emulator golden sets `win31` and `win31de` were made from an earlier Windows 3.1 image: on an image freshly
-  made with `mkwin31.py` the dialog text differs in the `controls`, `menus` and `scroll` scenarios (the same with
-  the engine of 0.1.0); they need regenerating from one reference image.
 
 ## Next steps
 
