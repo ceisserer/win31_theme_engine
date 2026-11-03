@@ -10,7 +10,7 @@ from them is stored in this repository.
 | `mkwin31.py --dos DOS.IMG --himem HIMEM.SYS --out WIN31.IMG [--lang deu --kblayout gerdll] DISK1.IMG ... DISK6.IMG` | Unattended Windows 3.1 install (`SETUP /H` with a generated `.SHH`: VGA, PS/2 mouse, no network; US English by default). Takes about a minute. |
 | `mkdebug.sh WIN31.IMG SDK/WINDEV/DEBUG OUT.IMG` | Copy with the SDK's debug KERNEL/USER/GDI and symbols. |
 | `mkvbe.py --base WIN31.IMG --driver DIR --out OUT.IMG [--depth 8]` | Copy using the VBE SVGA driver ([vbesvga.drv](https://github.com/PluMGMK/vbesvga.drv) release files) for 256-colour / high-colour tests in QEMU's standard VGA. |
-| `regress.sh IMG [PROFILE] [--update-golden]` | Runs every scenario against `tests/emu/golden/PROFILE/` (default `win31`; `win31de` for German Windows 3.1). |
+| `regress.sh IMG [PROFILE] [--update-golden]` | Runs every scenario against `tests/emu/golden/PROFILE/` (default `win31`; `win31de` for German Windows 3.1). `THEME=NAME` in the environment selects the theme (default `WIN95`). |
 | `run.py --base IMG --out DIR [--script FILE] [--step ...]` | Copies the image, deploys `build/win16` and `themes` to `C:\RETHEME`, starts Windows with the engine (and optionally GALLERY.EXE), runs the steps, saves screenshots and `RETHEME.LOG` (and COM1 with `--serial`). |
 | `test_setup.py --base IMG [--floppy DISK.IMG] [--theme NAME]` | End-to-end test of `SETUP.EXE` from the release floppy image (`make release`): silent install, reboot (engine starts from `load=`), silent removal with the installed copy; checks files, `RETHEME.INI`, `WIN.INI` and the Program Manager group on the disk. |
 | `qmon.py SOCKET CMD...` | Sends commands to the QEMU monitor. |
@@ -40,6 +40,18 @@ make win16
 tools/emu/run.py --base win31dbg.img --out out --serial --script tools/emu/scenarios/caption.txt
 tools/emu/regress.sh win31.img
 ```
+
+High colour (16 bit, 65536 colours), as the RedmondExperience theme (`WINXP`) wants it:
+
+```sh
+curl -LO https://github.com/PluMGMK/vbesvga.drv/releases/download/v1.0-beta4/vbesvga-release.zip
+mkdir vbe && unzip -d vbe vbesvga-release.zip
+tools/emu/mkvbe.py --base win31.img --driver vbe --out win31hc.img --width 800 --height 600 --depth 16
+tools/emu/run.py --base win31hc.img --out out --theme WINXP --gallery "dialog styles" --step "shot desk"
+THEME=WINXP tools/emu/regress.sh win31hc.img win31hc-xp
+```
+
+`--depth 8` gives 256 colours. QEMU's standard VGA offers the VBE modes the driver needs.
 
 Notes:
 * Host packages: `qemu-system-x86`, `mtools`, `fdisk` (`sfdisk`), `dosfstools`, `p7zip-full` (the provided media

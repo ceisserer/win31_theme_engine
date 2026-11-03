@@ -152,7 +152,8 @@ static void test_theme_classic(void)
 /* Every bundled theme must load without warnings. */
 static void test_theme_bundled(void)
 {
-    static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE" };
+    static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE",
+                                        "themes/WINXP" };
     int i;
     for (i = 0; i < (int)(sizeof(dirs) / sizeof(dirs[0])); i++) {
         RtTheme *t = rt_theme_load(dirs[i]);
@@ -162,9 +163,33 @@ static void test_theme_bundled(void)
         if (t->log[0])
             fprintf(stderr, "%s warnings:\n%s", dirs[i], t->log);
         CHECK_EQ(t->nwarn, 0);
-        CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0);
+        /* WIN95 and WINXP are complete; the others derive from WIN95 */
+        CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0 || strcmp(dirs[i], "themes/WINXP") == 0);
         rt_theme_free(t);
     }
+}
+
+/* WINXP (RedmondExperience) is self-contained, so only one theme is held in
+ * memory: it must define every part itself and keep to a small image budget. */
+static void test_theme_winxp(void)
+{
+    RtTheme *t = rt_theme_load("themes/WINXP");
+    int p;
+    CHECK(t != 0);
+    if (!t)
+        return;
+    CHECK(t->base == 0);
+    CHECK(t->nimages <= 8);
+    CHECK(strcmp(t->name, "RedmondExperience") == 0);
+    for (p = 0; p < RT_PART_COUNT; p++) {
+        int st = (p == RT_PART_FRAME || p == RT_PART_DLGFRAME || p == RT_PART_CAPTION
+                  || p == RT_PART_CAPTIONTEXT) ? RT_ST_ACTIVE : RT_ST_NORMAL;
+        if (!rt_theme_find(t, p, st, 0)) {
+            fprintf(stderr, "WINXP: part %s not defined\n", rt_part_names[p]);
+            CHECK(0);
+        }
+    }
+    rt_theme_free(t);
 }
 
 /* [SysColors]: the colours a theme sets while it runs */
@@ -395,6 +420,7 @@ int main(int argc, char **argv)
     test_theme_classic();
     test_theme_errors();
     test_theme_bundled();
+    test_theme_winxp();
     test_theme_syscolors();
     test_theme_bitmap();
     test_layout();
@@ -402,6 +428,7 @@ int main(int argc, char **argv)
     golden("themes/WIN95", "win95");
     golden("themes/WIN98", "win98");
     golden("themes/SLATE", "slate");
+    golden("themes/WINXP", "winxp");
     golden("host/tests/data/BMPTEST", "bmptest");
     printf("%d checks, %d failures%s\n", checks, failures, update_golden ? " (golden images updated)" : "");
     return failures ? 1 : 0;
