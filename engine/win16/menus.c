@@ -32,6 +32,9 @@ static HWND  measure_hwnd[MAX_MEASURE];   /* menu_measure_begin windows */
 static int   check_w, check_h, arrow_w, arrow_h;
 static int   font_h, font_ascent;   /* theme menu font */
 
+/* hover tracking: see menu_hover */
+static BOOL  hover_up;          /* no button held: USER ignores mouse moves */
+
 /* GrayString text captured from the memory DC during menu mode */
 static struct {
     char text[64];
@@ -115,6 +118,7 @@ void menu_message(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!g_menu_owner && !(GetWindowLong(hwnd, GWL_STYLE) & WS_CHILD)) {
             g_menu_owner = hwnd;
             gray.len = 0;
+            hover_up = TRUE;
             arm(TRUE);
         }
         break;
@@ -124,6 +128,57 @@ void menu_message(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             g_menu_owner = 0;
             arm(FALSE);
         }
+        break;
+    }
+}
+
+/* Whether pt (screen) is on a popup menu or on the menu bar of the window
+ * whose menu loop runs. */
+static BOOL over_menu(POINT pt)
+{
+    HWND w = WindowFromPoint(pt);
+    if (!w)
+        return FALSE;
+    if (ctl_class(w) == CLS_MENU)
+        return TRUE;
+    return w == g_menu_owner && menu_has_bar(w)
+        && SendMessage(w, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y)) == HTMENU;
+}
+
+/* Windows 95 menus follow the mouse; USER 3.1 tracks it only while the
+ * button is held, from a button press on. The first mouse move over a menu
+ * after the button went up is handed to USER as a button press, which puts
+ * the menu loop into that mode until the next release. A real click still
+ * works: its press keeps the mode, its release chooses the item.
+ * Called for the messages USER's menu loop takes from the queue (mouse
+ * positions in screen coordinates). The loop reads each message several
+ * times and acts on the first read: only that one is changed, more
+ * presses would toggle the menu. */
+void menu_hover(MSG FAR *msg)
+{
+    POINT pt;
+    if (!g_menu_owner)
+        return;
+    switch (msg->message) {
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONDBLCLK:
+        hover_up = FALSE;
+        break;
+    case WM_LBUTTONUP:
+        hover_up = TRUE;
+        break;
+    case WM_MOUSEMOVE:
+        if (!hover_up || (msg->wParam & MK_LBUTTON))
+            break;
+        pt.x = (int)LOWORD(msg->lParam);
+        pt.y = (int)HIWORD(msg->lParam);
+        if (!over_menu(pt))
+            break;
+        if (g_trace)
+            log_msg("menu hover: press at %d,%d", pt.x, pt.y);
+        msg->message = WM_LBUTTONDOWN;
+        msg->wParam |= MK_LBUTTON;
+        hover_up = FALSE;
         break;
     }
 }

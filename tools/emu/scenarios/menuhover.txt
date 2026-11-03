@@ -1,0 +1,65 @@
+#! --gallery "" --boot 50
+# Menus follow the mouse without a button held (Win95): hover into a
+# sub-menu, switch menus on the menu bar, choose an item by clicking;
+# a menu opened with the keyboard stays open while the mouse moves outside
+# it; clicking the open title or outside closes the menu; system menu.
+click 72 51
+2
+move 76 55
+1
+move 100 106
+2
+move 175 124
+2
+shot 01-hover-submenu
+move 40 51
+2
+move 70 87
+2
+shot 02-hover-other-menu
+click 70 87
+3
+shot 03-clicked-message-box
+mon sendkey ret
+2
+move 200 150
+1
+mon sendkey alt-e
+2
+move 210 160
+1
+move 220 170
+1
+shot 04-keyboard-menu-mouse-outside
+mon sendkey down
+1
+shot 05-keyboard-down
+mon sendkey esc
+1
+mon sendkey esc
+1
+click 72 51
+2
+move 73 52
+1
+click 72 51
+2
+shot 06-title-click-closes
+click 72 51
+2
+move 200 160
+1
+click 200 160
+2
+shot 07-click-outside-closes
+click 30 32
+2
+move 60 60
+1
+move 60 95
+2
+shot 08-system-menu-hover
+mon sendkey esc
+1
+mon sendkey esc
+1
