@@ -54,6 +54,10 @@ THEME=WINXP tools/emu/regress.sh win31hc.img win31hc-xp
 `--depth 8` gives 256 colours. QEMU's standard VGA offers the VBE modes the driver needs.
 
 Notes:
+* Host packages: `qemu-system-x86`, `mtools`, `fdisk` (`sfdisk`), `dosfstools`, `p7zip-full` (the provided media
+  are `.7z` archives).
+* `HIMEM.SYS` for `mkwin31.py` must be uncompressed; the one in the installed `WINDOWS` directory of `Win_31.zip`
+  (`docs/REQUIRED_TOOLS.md`, B.0) works.
 * Some archived 1.44 MB floppy images are short (trailing empty sectors cut
   off); the scripts pad them, otherwise QEMU guesses the wrong geometry.
 * The VM is killed at the end of a run, so the images run without SMARTDRV.

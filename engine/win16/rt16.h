@@ -185,6 +185,7 @@ extern HWND g_menu_owner;           /* window whose menu loop is running */
 void  menu_init(void);
 void  menu_shutdown(void);
 void  menu_message(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);   /* from the dispatcher */
+void  menu_hover(MSG FAR *msg);         /* posted messages of the menu loop */
 void  menu_measure_begin(HWND hwnd);    /* USER may lay out hwnd's menu bar */
 void  menu_measure_end(HWND hwnd);
 BOOL  menu_has_bar(HWND hwnd);
