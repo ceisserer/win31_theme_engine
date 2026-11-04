@@ -102,7 +102,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   wallpaper or another window; it is made for 15/16/24-bit displays.
 * `WIN11`: as `WINXP` (caption height, no hot-tracking, corners in the desktop colour); the frame is USER's
   thick sizing frame, not Windows 11's 1-pixel border; popup menus are square; fonts are Arial and MS Sans Serif
-  (no Segoe UI on Windows 3.1); NewShell16 keeps its Windows 95 taskbar (`[Shell] Style=11` is not used yet).
+  (no Segoe UI on Windows 3.1). With NewShell16 as the shell the taskbar and Start menu follow (`[Shell] Style=11`).
 
 ## Next steps
 

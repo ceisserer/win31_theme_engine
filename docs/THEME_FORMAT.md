@@ -30,7 +30,7 @@ Settings for shells that draw their own taskbar and Start menu. The engine ignor
 
 | Key | Meaning |
 |---|---|
-| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. `WIN11` sets `11`, which NewShell16 does not know yet. |
+| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. `11`: the Windows 11 taskbar and Start menu (`WIN11` sets it). |
 
 ### `[Metrics]`
 
