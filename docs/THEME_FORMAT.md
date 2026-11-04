@@ -30,7 +30,7 @@ Settings for shells that draw their own taskbar and Start menu. The engine ignor
 
 | Key | Meaning |
 |---|---|
-| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. |
+| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. `WIN11` sets `11`, which NewShell16 does not know yet. |
 
 ### `[Metrics]`
 
@@ -123,7 +123,7 @@ refers to them.
 | `BtnClose`, `BtnMin`, `BtnMax`, `BtnRestore` | caption buttons | `Normal`, `Pressed`, `Disabled` |
 | `MenuBar`, `MenuBarItem`, `MenuBarText` | menu bar | items: `Normal`, `Selected`, `Disabled` |
 | `Menu`, `MenuItem`, `MenuText`, `MenuSeparator`, `MenuCheck`, `MenuSubArrow` | popup menus | `Normal`, `Selected`, `Disabled` |
-| `PushButton`, `PushButtonText` | push buttons | `Normal`, `Pressed`, `Disabled`, `Default`, `DefaultPressed` |
+| `PushButton`, `PushButtonText` | push buttons | `Normal`, `Pressed`, `Disabled`, `Default`, `DefaultPressed` (the label gets the button's state, `Disabled` when the button is disabled; `WIN11` gives the default button a white label) |
 | `Focus` | keyboard focus indicator | |
 | `CheckBox`, `Radio` | 13×13 / 12×12 boxes | `Normal`, `Pressed`, `Disabled`, `Checked`, `CheckedPressed`, `CheckedDisabled`, `Mixed`, `MixedPressed`, `MixedDisabled` |
 | `GroupBox`, `StaticText` | group frame, static text | `StaticText`: `Normal`, `Disabled` |
@@ -214,7 +214,7 @@ disabled look); `Size=w,h` (scaled, default natural size); `Offset=x,y`.
 | `Recolor` | `1`: apply `[Recolor]` |
 
 Use 16-colour bitmaps where possible: most Windows 3.x systems run at 16 or 256 colours, and GDI memory is limited
-(at most 16 images per theme). A theme made for high-colour displays (like `WINXP`) can use 24-bpp bitmaps: GDI
+(at most 16 images per theme). A theme made for high-colour displays (like `WINXP` and `WIN11`) can use 24-bpp bitmaps: GDI
 maps them to the nearest colours on 16- and 256-colour displays. Bitmaps are kept as device bitmaps, outside the
 GDI heap; their size counts against global memory only (2 bytes per pixel at 65536 colours).
 

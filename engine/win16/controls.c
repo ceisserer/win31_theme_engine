@@ -449,9 +449,13 @@ static void paint_button(const Ctx *c)
     case CK_PUSH:
     case CK_DEFPUSH: {
         int st = pushed ? RT_ST_PRESSED : c->kind == CK_DEFPUSH ? RT_ST_DEFAULT : RT_ST_NORMAL;
-        int ts = !enabled ? RT_ST_DISABLED : pushed ? RT_ST_PRESSED : RT_ST_NORMAL;
+        /* the label has the button's states too (a theme may colour the
+         * default button's text; Default and DefaultPressed fall back to
+         * Normal and Pressed) */
+        int ts;
         if (pushed && c->kind == CK_DEFPUSH)
             st = RT_ST_DEFAULTPRESSED;
+        ts = enabled ? st : RT_ST_DISABLED;
         GetWindowText(hwnd, text, sizeof(text));
         render(&s, RT_PART_PUSHBUTTON, st, &rc, 0, 0, 0);
         render(&s, RT_PART_PUSHBUTTONTEXT, ts, &rc, 0, text, RT_RQ_PREFIX | RT_RQ_CENTER);
