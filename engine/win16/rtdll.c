@@ -44,11 +44,49 @@ static int      nsys;
 static int      sys_idx[RT_SYS_COUNT];
 static COLORREF sys_old[RT_SYS_COUNT], sys_new[RT_SYS_COUNT];
 
+/* The colours of Windows 3.1 ("Windows Default", as the VGA driver gives
+ * them), COLOR_SCROLLBAR .. COLOR_BTNHIGHLIGHT. Without a [colors] section
+ * in WIN.INI, USER takes its colours from the display driver, and some
+ * drivers have a scheme of their own: vbesvga.drv has a sky blue caption
+ * with black text and a light blue selection, which the themes, made for
+ * the standard colours, do not expect. */
+static const COLORREF win31_colors[21] = {
+    RGB(192, 192, 192), RGB(192, 192, 192), RGB(0, 0, 128), RGB(255, 255, 255),
+    RGB(255, 255, 255), RGB(255, 255, 255), RGB(0, 0, 0), RGB(0, 0, 0),
+    RGB(0, 0, 0), RGB(255, 255, 255), RGB(192, 192, 192), RGB(192, 192, 192),
+    RGB(255, 255, 255), RGB(0, 0, 128), RGB(255, 255, 255), RGB(192, 192, 192),
+    RGB(128, 128, 128), RGB(192, 192, 192), RGB(0, 0, 0), RGB(0, 0, 0),
+    RGB(255, 255, 255)
+};
+
+/* Adds the Windows 3.1 colours the theme does not set when WIN.INI has no
+ * [colors] (nobody chose a colour scheme yet); returns the new count */
+static int syscolors_defaults(rt_u8 *idx, RtColor *rgb, int n)
+{
+    char keys[8];
+    int i, j;
+
+    if (GetProfileString("colors", NULL, "", keys, sizeof(keys)) > 0)
+        return n;
+    for (i = 0; i < 21 && n < RT_SYS_COUNT; i++) {
+        for (j = 0; j < n && idx[j] != i; j++)
+            ;
+        /* not the desktop: a shell may have set it (NewShell16 sets
+         * Windows 95's teal when WIN.INI has none) */
+        if (j == n && i != COLOR_BACKGROUND && GetSysColor(i) != win31_colors[i]) {
+            idx[n] = (rt_u8)i;
+            rgb[n] = (RtColor)win31_colors[i];
+            n++;
+        }
+    }
+    return n;
+}
+
 static void syscolors_apply(void)
 {
     rt_u8 idx[RT_SYS_COUNT];
     RtColor rgb[RT_SYS_COUNT];
-    int i, n = rt_theme_syscolors(g_theme, idx, rgb);
+    int i, n0 = rt_theme_syscolors(g_theme, idx, rgb), n = syscolors_defaults(idx, rgb, n0);
     HDC hdc = GetDC(NULL);
     /* with 16 or 256 colours (20 of them static) Windows would dither most
      * of them: use the nearest solid colours instead */
@@ -70,7 +108,11 @@ static void syscolors_apply(void)
     if (nsys)
         SetSysColors(nsys, sys_idx, sys_new);
     if (n) {
-        log_msg("theme sets %d system colour(s)%s", n, (LPSTR)(few ? ", nearest solid colours" : ""));
+        if (n0)
+            log_msg("theme sets %d system colour(s)%s", n0, (LPSTR)(few ? ", nearest solid colours" : ""));
+        if (n > n0)
+            log_msg("no [colors] in WIN.INI: %d Windows 3.1 colour(s) instead of the display driver's",
+                    n - n0);
         rt_theme_syscolor_changed(g_theme);
     }
 }

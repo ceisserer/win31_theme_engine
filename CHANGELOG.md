@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+* Without a colour scheme (no `[colors]` in `WIN.INI`) Windows takes its colours from the display driver, and
+  some drivers have their own: with vbesvga.drv (16 and 24-bit colour in QEMU and on modern cards) the caption
+  was sky blue with black text and the selection light blue, so the Windows 95, 98 and ME themes looked wrong.
+  The engine now uses the colours of Windows 3.1 instead (navy caption and selection, white text) while it runs,
+  for the colours the theme does not set itself, except the desktop. A colour scheme chosen in Control Panel is
+  left as it is.
 * New theme `WIN11`, "Redmond-11": the light look of Windows 11 (a light caption with dark text, rounded window
   corners, flat caption buttons with a red pressed close button, white rounded push buttons with a blue default
   button, blue check boxes and radio buttons, thin rounded scroll bar thumbs, light menus with a rounded grey
