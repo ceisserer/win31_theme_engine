@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Edit and list boxes in dialogs: the outer pixel of their 3D border no longer stays behind when the box is
+  hidden, moved or resized (e.g. pages of controls switched in NewShell16's Options dialog).
 * Without a colour scheme (no `[colors]` in `WIN.INI`) Windows takes its colours from the display driver, and
   some drivers have their own: with vbesvga.drv (16 and 24-bit colour in QEMU and on modern cards) the caption
   was sky blue with black text and the selection light blue, so the Windows 95, 98 and ME themes looked wrong.

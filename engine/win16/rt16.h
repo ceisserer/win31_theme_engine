@@ -162,6 +162,7 @@ void ctl_ctlcolor(HWND dlg, WPARAM wp, LPARAM lp, LRESULT FAR *result);
 void ctl_dialog_init(HWND dlg);
 void ctl_dialog_paint(HWND dlg);
 BOOL ctl_is_field(HWND hwnd);
+void ctl_field_poschanging(HWND child, const WINDOWPOS FAR *wp);
 void ctl_field_ncpaint(HWND child);
 void ctl_init(void);
 void ctl_syscolor(void);
