@@ -1,6 +1,6 @@
 # Status
 
-Last update: 2026-11-03.
+Last update: 2026-11-04.
 
 ## Verified on Windows (QEMU)
 
@@ -50,6 +50,11 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   and combo buttons, white menus with a grey border, the Luna colour scheme as system colours. Also runs at 256 and
   16 colours (nearest colours; the theme's own literal colours are dithered there). With NewShell16 as the shell the
   taskbar and Start menu follow (`[Shell] Style=XP`).
+* **Redmond-11 (`WIN11`):** the light Windows 11 look at 800×600 with 65536 colours (Windows 3.1, VBE driver,
+  GALLERY dialogs): light caption with dark text and rounded corners, flat caption buttons, rounded push buttons
+  with the blue default button and its white label, blue check boxes and radio buttons, thin scroll bar thumbs,
+  light menus with a rounded highlight, the Windows 11 light colours as system colours. No emulator golden set
+  yet (spot check, `docs/images/win11_gallery.png`).
 * **System colours on 256-colour displays:** `[SysColors]` are set to the nearest solid colours with 256 colours
   too (before: only with 16), so the Windows ME and XP schemes are not dithered.
 
@@ -64,6 +69,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | USER 3.1 caption model (measured: bar `SM_CYSIZE` high, boxes `SM_CXSIZE+1` wide, dialog frame `SM_CXDLGFRAME` + border, menu bar `SM_CYMENU` + line) and theme→USER point mapping | `engine/geom/nclayout.c`, `engine/win16/ncpaint.c` | Windows 3.1 (US, German), WfW 3.11 |
 | Default theme `WIN95` "Redmond 95" (procedural only); `WIN98` "Redmond 98" and `WINME` "Redmond ME" (derived; `WINME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
 | `WINXP` "RedmondExperience": Windows XP Luna look, self-contained (no `Base=`, one theme in memory), 6 24-bpp bitmaps (about 31 KB of files) drawn by a generator, `[Shell] Style=XP` for NewShell16 | `themes/WINXP`, `tools/gen_winxp.py` | previews, golden images, Windows 3.1 at 16 bit |
+| `WIN11` "Redmond-11": Windows 11 light look, self-contained, 5 24-bpp bitmaps (about 34 KB of files) drawn by a generator; `PushButtonText.Default` for the white label of the accent-coloured default button | `themes/WIN11`, `tools/gen_win11.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
 | Host tools: software backend, PNG writer, previewer, test suite | `host/` | — |
 | Win16 runtime: patch engine (alias selectors, JMP FAR, arm/disarm per reason, suspend/resume, permanent patches), hooks, one-shot subclassing with post-processing of the result, per-window state, log ring buffer, trace levels 1/2 | `engine/win16/` | Windows |
 | Interceptors: `PatBlt`, `BitBlt`, `StretchBlt`, `ExtTextOut`, `TextOut`, `Rectangle`, `LineTo`, `Polyline`, `SetPixel`, `FastWindowFrame`, `GetTextExtent`, `GetTextExtentPoint`, `PtInRect`, `SysErrorBox`, `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` | `engine/win16/intercept.c`, `scroll.c` | Windows |
@@ -94,6 +100,9 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * `WINXP`: the caption keeps the height USER gives it (Windows XP's is taller); no hot-tracking (buttons do not
   light up under the mouse); the rounded frame corners are painted in the desktop colour, so they show over a
   wallpaper or another window; it is made for 15/16/24-bit displays.
+* `WIN11`: as `WINXP` (caption height, no hot-tracking, corners in the desktop colour); the frame is USER's
+  thick sizing frame, not Windows 11's 1-pixel border; popup menus are square; fonts are Arial and MS Sans Serif
+  (no Segoe UI on Windows 3.1). With NewShell16 as the shell the taskbar and Start menu follow (`[Shell] Style=11`).
 
 ## Next steps
 

@@ -282,7 +282,7 @@ static void scene_dialog(const RtTheme *th, RtSurface *s, int x, int y)
     label(th, s, cx + 196, cy + 156, cx + 360, cy + 172, "Disabled static text", 1);
 
     /* push buttons */
-    button(th, s, cx + 8, cy + 190, "OK", RT_ST_DEFAULT, RT_ST_NORMAL, 1);
+    button(th, s, cx + 8, cy + 190, "OK", RT_ST_DEFAULT, RT_ST_DEFAULT, 1);
     button(th, s, cx + 92, cy + 190, "Cancel", RT_ST_NORMAL, RT_ST_NORMAL, 0);
     button(th, s, cx + 176, cy + 190, "Pressed", RT_ST_PRESSED, RT_ST_PRESSED, 0);
     button(th, s, cx + 260, cy + 190, "&Apply", RT_ST_NORMAL, RT_ST_DISABLED, 0);

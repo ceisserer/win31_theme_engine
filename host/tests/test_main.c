@@ -153,7 +153,7 @@ static void test_theme_classic(void)
 static void test_theme_bundled(void)
 {
     static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE",
-                                        "themes/WINXP" };
+                                        "themes/WINXP", "themes/WIN11" };
     int i;
     for (i = 0; i < (int)(sizeof(dirs) / sizeof(dirs[0])); i++) {
         RtTheme *t = rt_theme_load(dirs[i]);
@@ -163,32 +163,49 @@ static void test_theme_bundled(void)
         if (t->log[0])
             fprintf(stderr, "%s warnings:\n%s", dirs[i], t->log);
         CHECK_EQ(t->nwarn, 0);
-        /* WIN95 and WINXP are complete; the others derive from WIN95 */
-        CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0 || strcmp(dirs[i], "themes/WINXP") == 0);
+        /* WIN95, WINXP and WIN11 are complete; the others derive from WIN95 */
+        CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0 || strcmp(dirs[i], "themes/WINXP") == 0
+              || strcmp(dirs[i], "themes/WIN11") == 0);
         rt_theme_free(t);
     }
 }
 
-/* WINXP (RedmondExperience) is self-contained, so only one theme is held in
- * memory: it must define every part itself and keep to a small image budget. */
-static void test_theme_winxp(void)
+/* WINXP (RedmondExperience) and WIN11 (Redmond-11) are self-contained, so
+ * only one theme is held in memory: they must define every part themselves
+ * and keep to a small image budget. */
+static void test_theme_selfcontained(const char *dir, const char *name)
 {
-    RtTheme *t = rt_theme_load("themes/WINXP");
+    RtTheme *t = rt_theme_load(dir);
     int p;
     CHECK(t != 0);
     if (!t)
         return;
     CHECK(t->base == 0);
     CHECK(t->nimages <= 8);
-    CHECK(strcmp(t->name, "RedmondExperience") == 0);
+    CHECK(strcmp(t->name, name) == 0);
     for (p = 0; p < RT_PART_COUNT; p++) {
         int st = (p == RT_PART_FRAME || p == RT_PART_DLGFRAME || p == RT_PART_CAPTION
                   || p == RT_PART_CAPTIONTEXT) ? RT_ST_ACTIVE : RT_ST_NORMAL;
         if (!rt_theme_find(t, p, st, 0)) {
-            fprintf(stderr, "WINXP: part %s not defined\n", rt_part_names[p]);
+            fprintf(stderr, "%s: part %s not defined\n", dir, rt_part_names[p]);
             CHECK(0);
         }
     }
+    rt_theme_free(t);
+}
+
+/* Redmond-11: the default push button has a label of its own (white on the
+ * accent colour); the other states of the label fall back as usual. */
+static void test_theme_win11(void)
+{
+    RtTheme *t = rt_theme_load("themes/WIN11");
+    CHECK(t != 0);
+    if (!t)
+        return;
+    CHECK(rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_DEFAULT, 0)
+          != rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_NORMAL, 0));
+    CHECK(rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_DEFAULTPRESSED, 0)
+          == rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_PRESSED, 0));
     rt_theme_free(t);
 }
 
@@ -375,7 +392,9 @@ static unsigned char *read_file(const char *path, size_t *len)
     return buf;
 }
 
-static void golden(const char *theme_dir, const char *tag)
+/* syscolors: set the theme's [SysColors] first, as the engine and the
+ * previewer do (the older golden sets were made without them) */
+static void golden_ex(const char *theme_dir, const char *tag, int syscolors)
 {
     RtTheme *t;
     int sc;
@@ -385,6 +404,15 @@ static void golden(const char *theme_dir, const char *tag)
     CHECK(t != 0);
     if (!t)
         return;
+    if (syscolors) {
+        rt_u8 idx[RT_SYS_COUNT];
+        RtColor rgb[RT_SYS_COUNT];
+        int i, n = rt_theme_syscolors(t, idx, rgb);
+        for (i = 0; i < n; i++)
+            host_set_syscolor(idx[i], rgb[i]);
+        if (n)
+            rt_theme_syscolor_changed(t);
+    }
     for (sc = 0; sc < SCENE_COUNT; sc++) {
         char path[256];
         RtSurface *s = scene_render(t, sc);
@@ -409,6 +437,13 @@ static void golden(const char *theme_dir, const char *tag)
         sw_surface_free(s);
     }
     rt_theme_free(t);
+    if (syscolors)
+        host_reset_syscolors();
+}
+
+static void golden(const char *theme_dir, const char *tag)
+{
+    golden_ex(theme_dir, tag, 0);
 }
 
 int main(int argc, char **argv)
@@ -420,7 +455,9 @@ int main(int argc, char **argv)
     test_theme_classic();
     test_theme_errors();
     test_theme_bundled();
-    test_theme_winxp();
+    test_theme_selfcontained("themes/WINXP", "RedmondExperience");
+    test_theme_selfcontained("themes/WIN11", "Redmond-11");
+    test_theme_win11();
     test_theme_syscolors();
     test_theme_bitmap();
     test_layout();
@@ -429,6 +466,7 @@ int main(int argc, char **argv)
     golden("themes/WIN98", "win98");
     golden("themes/SLATE", "slate");
     golden("themes/WINXP", "winxp");
+    golden_ex("themes/WIN11", "win11", 1);
     golden("host/tests/data/BMPTEST", "bmptest");
     printf("%d checks, %d failures%s\n", checks, failures, update_golden ? " (golden images updated)" : "");
     return failures ? 1 : 0;
