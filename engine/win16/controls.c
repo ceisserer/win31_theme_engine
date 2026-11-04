@@ -696,6 +696,28 @@ void ctl_field_ncpaint(HWND child)
     ReleaseDC(dlg, hdc);
 }
 
+/* Before a field is hidden, moved or sized (WM_WINDOWPOSCHANGING): USER
+ * repaints only the field's own rectangle, so the pixel of the 3D ring
+ * outside it would stay on the dialog (e.g. a page of controls hidden for
+ * another one). Have the dialog repaint the whole ring. */
+void ctl_field_poschanging(HWND child, const WINDOWPOS FAR *wp)
+{
+    HWND dlg = GetParent(child);
+    RECT r;
+    POINT pt;
+    if (!wp || (!(wp->flags & SWP_HIDEWINDOW) && (wp->flags & (SWP_NOMOVE | SWP_NOSIZE))
+                == (SWP_NOMOVE | SWP_NOSIZE)))
+        return;
+    if (!dlg || !wants_field(child) || ctl_class(dlg) != CLS_DIALOG)
+        return;
+    GetWindowRect(child, &r);
+    pt.x = r.left;
+    pt.y = r.top;
+    ScreenToClient(dlg, &pt);
+    SetRect(&r, pt.x - 1, pt.y - 1, pt.x + (r.right - r.left) + 1, pt.y + (r.bottom - r.top) + 1);
+    InvalidateRect(dlg, &r, TRUE);
+}
+
 BOOL ctl_is_field(HWND hwnd)
 {
     HWND parent = GetParent(hwnd);

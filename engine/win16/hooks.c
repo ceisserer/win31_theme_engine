@@ -203,6 +203,9 @@ static void dispatch_sent(LPCWPSTRUCT16 cwp)
         if (menu_has_bar(hwnd) && oneshot_push(hwnd, WM_NCCALCSIZE, JOB_MEASURE, cwp->wParam, cwp->lParam))
             menu_measure_begin(hwnd);
         break;
+    case WM_WINDOWPOSCHANGING:
+        ctl_field_poschanging(hwnd, (const WINDOWPOS FAR *)cwp->lParam);
+        break;
     case WM_CTLCOLOR:
         if (ctl_class(hwnd) == CLS_DIALOG)
             oneshot_push(hwnd, WM_CTLCOLOR, JOB_CTLCOLOR, cwp->wParam, cwp->lParam);
