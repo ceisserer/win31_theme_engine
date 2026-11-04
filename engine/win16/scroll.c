@@ -64,13 +64,24 @@ void scroll_end(HWND hwnd)
     }
 }
 
+/* Whether a child window belongs to a themed window: it is in a dialog,
+ * or its top-level window is themed (panes, tree views, the document
+ * window of Write with its scroll bar controls). */
+static BOOL child_themed(HWND hwnd)
+{
+    HWND parent = GetParent(hwnd);
+    int n;
+    if (parent && ctl_class(parent) == CLS_DIALOG)
+        return TRUE;
+    for (n = 0; parent && n < 16 && (GetWindowLong(parent, GWL_STYLE) & WS_CHILD); n++)
+        parent = GetParent(parent);
+    return parent && nc_wants(parent);
+}
+
+/* Scroll bar controls in dialogs and in themed windows */
 static BOOL themed_control(HWND hwnd)
 {
-    HWND parent;
-    if (ctl_class(hwnd) != CLS_SCROLLBAR)
-        return FALSE;
-    parent = GetParent(hwnd);
-    return parent && ctl_class(parent) == CLS_DIALOG;
+    return ctl_class(hwnd) == CLS_SCROLLBAR && child_themed(hwnd);
 }
 
 /* Windows whose own scroll bars are themed: themed top-level windows,
@@ -79,18 +90,11 @@ static BOOL themed_control(HWND hwnd)
 static BOOL window_themed(HWND hwnd)
 {
     DWORD style = GetWindowLong(hwnd, GWL_STYLE);
-    HWND parent;
-    int n;
     if (!(style & (WS_VSCROLL | WS_HSCROLL)))
         return FALSE;
     if (!(style & WS_CHILD))
         return nc_wants(hwnd);
-    parent = GetParent(hwnd);
-    if (parent && ctl_class(parent) == CLS_DIALOG)
-        return TRUE;
-    for (n = 0; parent && n < 16 && (GetWindowLong(parent, GWL_STYLE) & WS_CHILD); n++)
-        parent = GetParent(parent);
-    return parent && nc_wants(parent);
+    return child_themed(hwnd);
 }
 
 BOOL scroll_wants(HWND hwnd, UINT msg, WPARAM wp)
