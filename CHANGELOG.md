@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Scroll bar controls outside dialogs get the theme too when their window is themed, e.g. the scroll bars of
+  Write's document (they had the Windows 3.1 look).
 * Edit and list boxes in dialogs: the outer pixel of their 3D border no longer stays behind when the box is
   hidden, moved or resized (e.g. pages of controls switched in NewShell16's Options dialog).
 * Without a colour scheme (no `[colors]` in `WIN.INI`) Windows takes its colours from the display driver, and
