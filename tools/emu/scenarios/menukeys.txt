@@ -1,0 +1,45 @@
+#! --gallery "" --boot 50
+# Left and Right go through the menus after the mouse moved the selection
+# (menus follow the mouse, see menuhover): a menu opened by a click with the
+# pointer resting on its title, a popup item chosen by hovering, a cascaded
+# sub-menu; Esc closes.
+click 72 51
+2
+mon sendkey right
+1
+shot 01-click-right
+mon sendkey right
+1
+shot 02-right-wraps-to-system-menu
+mon sendkey left
+1
+mon sendkey left
+1
+shot 03-left-back
+mon sendkey esc
+1
+mon sendkey esc
+1
+click 72 51
+2
+move 100 106
+2
+move 175 124
+2
+shot 04-hover-submenu
+mon sendkey down
+1
+shot 05-down-in-submenu
+mon sendkey left
+1
+shot 06-left-closes-submenu
+mon sendkey right
+1
+mon sendkey right
+1
+shot 07-right-to-next-menu
+mon sendkey esc
+1
+mon sendkey esc
+1
+shot 08-closed
