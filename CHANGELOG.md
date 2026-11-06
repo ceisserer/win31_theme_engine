@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Menus: Left and Right (and the other menu keys, Esc included) work again after the mouse moved the selection;
+  since menus follow the mouse, an open menu ignored the keyboard once the pointer had been over it.
 * Scroll bar controls outside dialogs get the theme too when their window is themed, e.g. the scroll bars of
   Write's document (they had the Windows 3.1 look).
 * Edit and list boxes in dialogs: the outer pixel of their 3D border no longer stays behind when the box is

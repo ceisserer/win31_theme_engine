@@ -34,6 +34,11 @@ static int   font_h, font_ascent;   /* theme menu font */
 
 /* hover tracking: see menu_hover */
 static BOOL  hover_up;          /* no button held: USER ignores mouse moves */
+static BOOL  hover_fake;        /* the press USER sees is ours, the button is up */
+static POINT hover_pt;
+static MSG   key;               /* the key that ends a press of ours */
+static int   key_reads = -1;    /* its reads so far, -1: none pending */
+static POINT key_up;            /* where it is released */          /* the last mouse position seen in the loop */
 
 /* GrayString text captured from the memory DC during menu mode */
 static struct {
@@ -119,6 +124,9 @@ void menu_message(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             g_menu_owner = hwnd;
             gray.len = 0;
             hover_up = TRUE;
+            hover_fake = FALSE;
+            hover_pt.x = hover_pt.y = -32768;
+            key_reads = -1;
             arm(TRUE);
         }
         break;
@@ -145,6 +153,27 @@ static BOOL over_menu(POINT pt)
         && SendMessage(w, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y)) == HTMENU;
 }
 
+/* A release that changes nothing: on the border of the topmost popup (the
+ * deepest one open), or, with no popup open, at the right end of the menu
+ * bar (a release on a menu bar item without a popup would choose it). */
+static void release_pt(POINT *pt)
+{
+    HWND w;
+    RECT r;
+    for (w = GetWindow(GetDesktopWindow(), GW_CHILD); w; w = GetWindow(w, GW_HWNDNEXT))
+        if (IsWindowVisible(w) && ctl_class(w) == CLS_MENU) {
+            GetWindowRect(w, &r);
+            pt->x = r.left;
+            pt->y = r.top;
+            return;
+        }
+    *pt = hover_pt;
+    if (over_menu(*pt)) {
+        GetWindowRect(g_menu_owner, &r);
+        pt->x = r.right - GetSystemMetrics(SM_CXFRAME) - 1;
+    }
+}
+
 /* Windows 95 menus follow the mouse; USER 3.1 tracks it only while the
  * button is held, from a button press on. The first mouse move over a menu
  * after the button went up is handed to USER as a button press, which puts
@@ -153,32 +182,74 @@ static BOOL over_menu(POINT pt)
  * Called for the messages USER's menu loop takes from the queue (mouse
  * positions in screen coordinates). The loop reads each message several
  * times and acts on the first read: only that one is changed, more
- * presses would toggle the menu. */
+ * presses would toggle the menu.
+ *
+ * While USER thinks the button is held it ignores the keyboard (Left,
+ * Right, Esc ...). A key that arrives while the press is only ours is
+ * therefore handed to USER as a release first, on a spot where releasing
+ * changes nothing (release_pt), and posted again, so USER takes it in
+ * keyboard mode. USER acts on the release only when every read of the
+ * message shows it.
+ * Only moves that change the position count as hovering: USER makes up a
+ * mouse move at the same position whenever a popup opens or closes, which
+ * would take the selection straight back to the menu under the pointer
+ * after Left or Right. */
 void menu_hover(MSG FAR *msg)
 {
     POINT pt;
+    BOOL  moved;
     if (!g_menu_owner)
         return;
     switch (msg->message) {
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        if (hover_fake) {
+            key = *msg;
+            key_reads = 0;
+            release_pt(&key_up);
+            hover_up = TRUE;
+            hover_fake = FALSE;
+            if (g_trace)
+                log_msg("menu hover: release at %d,%d for key %x", key_up.x, key_up.y, msg->wParam);
+        }
+        if (key_reads >= 0 && msg->time == key.time && msg->message == key.message
+            && msg->wParam == key.wParam && msg->lParam == key.lParam) {
+            msg->message = WM_LBUTTONUP;
+            msg->wParam = 0;
+            msg->lParam = MAKELPARAM(key_up.x, key_up.y);
+            /* read twice (looked at, then removed): then the key itself */
+            if (++key_reads == 2) {
+                key_reads = -1;
+                PostMessage(key.hwnd, key.message, key.wParam, key.lParam);
+            }
+        }
+        break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK:
         hover_up = FALSE;
+        hover_fake = FALSE;
+        hover_pt.x = (int)LOWORD(msg->lParam);
+        hover_pt.y = (int)HIWORD(msg->lParam);
         break;
     case WM_LBUTTONUP:
         hover_up = TRUE;
+        hover_fake = FALSE;
+        hover_pt.x = (int)LOWORD(msg->lParam);
+        hover_pt.y = (int)HIWORD(msg->lParam);
         break;
     case WM_MOUSEMOVE:
-        if (!hover_up || (msg->wParam & MK_LBUTTON))
-            break;
         pt.x = (int)LOWORD(msg->lParam);
         pt.y = (int)HIWORD(msg->lParam);
-        if (!over_menu(pt))
+        moved = pt.x != hover_pt.x || pt.y != hover_pt.y;
+        hover_pt = pt;
+        if (!moved || !hover_up || (msg->wParam & MK_LBUTTON) || !over_menu(pt))
             break;
         if (g_trace)
             log_msg("menu hover: press at %d,%d", pt.x, pt.y);
         msg->message = WM_LBUTTONDOWN;
         msg->wParam |= MK_LBUTTON;
         hover_up = FALSE;
+        hover_fake = TRUE;
         break;
     }
 }

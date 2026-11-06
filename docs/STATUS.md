@@ -14,7 +14,7 @@ Configurations:
 | Windows 3.1 + VBE SVGA driver (vbesvga.drv 1.0 beta 4), theme `WINXP` | 264 016 bytes | 800×600×65536 (16 bit) | `tests/emu/golden/win31hc-xp` |
 | Windows for Workgroups 3.11 (pre-installed) | 3.11 | VGA 640×480×16 | spot checks |
 
-All in 386 Enhanced mode. Scenarios in `tools/emu/scenarios` (`caption`, `controls`, `menus`, `menuhover`, `scroll`) run
+All in 386 Enhanced mode. Scenarios in `tools/emu/scenarios` (`caption`, `controls`, `menus`, `menuhover`, `menukeys`, `scroll`) run
 pixel-identical against
 their golden screenshots (`tools/emu/regress.sh`). Verified:
 
@@ -30,7 +30,8 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   check marks and sub-menu arrows, the system menu; unloading restores the 3.1 menus. The selection follows the
   mouse without a button held, as in Windows 95 (USER 3.1 tracks the mouse only after a button press: the first
   mouse move over an open menu is handed to it as one), also in `TrackPopupMenu` popups such as NewShell16's Start
-  menu.
+  menu. The keyboard keeps working after that (USER ignores keys while it thinks the button is held: a key first
+  releases that press on a spot where a release changes nothing, then reaches USER).
 * **Scroll bars and combo boxes:** window scroll bars (top-level windows, list boxes, child windows of themed windows with and
   without a border), scroll bar controls and
   drop-down list combo boxes have Win95 arrow buttons (pressed and released), dither track and raised thumb;
