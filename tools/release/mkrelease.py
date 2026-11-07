@@ -38,9 +38,25 @@ def crlf(text):
     return text.replace("\r\n", "\n").replace("\n", "\r\n").encode("latin-1")
 
 
+def theme_order(path):
+    """[Theme] Order= of a THEME.INI: where theme lists put it (themes
+    without it come last)."""
+    with open(path, encoding="latin-1") as f:
+        for line in f:
+            if line.strip().lower().startswith("order="):
+                try:
+                    return int(line.split("=", 1)[1].split(";")[0])
+                except ValueError:
+                    break
+    return 1000
+
+
 def themes():
+    """The theme directories in the order of [Theme] Order=, then by name;
+    the default theme first."""
     d = os.path.join(ROOT, "themes")
-    names = sorted(t for t in os.listdir(d) if os.path.isfile(os.path.join(d, t, "THEME.INI")))
+    names = [t for t in os.listdir(d) if os.path.isfile(os.path.join(d, t, "THEME.INI"))]
+    names.sort(key=lambda t: (theme_order(os.path.join(d, t, "THEME.INI")), t))
     names.remove(DEFAULT_THEME)
     return [DEFAULT_THEME] + names
 

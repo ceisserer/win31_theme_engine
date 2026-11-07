@@ -1,7 +1,8 @@
 # win31_theme_engine
 
 Open-source, themeable engine that brings the Windows 95 look, the Windows XP "Luna" look (theme
-RedmondExperience), the light Windows 11 look (theme Redmond-11) and custom, skinnable themes to Windows 3.1 and Windows for Workgroups 3.11. Working name:
+RedmondExperience), the light Windows 11 look (theme Redmond-11), the grey Platinum and the Aqua look of the Macintosh (themes
+Cupertino Platinum and Cupertino Aqua) and custom, skinnable themes to Windows 3.1 and Windows for Workgroups 3.11. Working name:
 Retheme16.
 
 ![Classic95 theme preview](host/tests/golden/win95_window.png)
@@ -11,6 +12,10 @@ Retheme16.
 ![RedmondExperience dialog preview](host/tests/golden/winxp_dialog.png)
 ![Redmond-11 (Windows 11) theme preview](host/tests/golden/win11_window.png)
 ![Redmond-11 dialog preview](host/tests/golden/win11_dialog.png)
+![Cupertino Platinum theme preview](host/tests/golden/os9_window.png)
+![Cupertino Platinum dialog preview](host/tests/golden/os9_dialog.png)
+![Cupertino Aqua theme preview](host/tests/golden/osx_window.png)
+![Cupertino Aqua dialog preview](host/tests/golden/osx_dialog.png)
 
 *Previews rendered on Linux by the engine's own renderer (`make preview`).*
 
@@ -50,7 +55,7 @@ switcher/                             THEMES.EXE: switches the theme of the runn
 dist/                                 release package: SETUP.INF (installer configuration), README.TXT
 external/win16setup                   SETUP.EXE installer (git submodule: Win16Setup)
 host/                                 Linux backend, previewer, tests, golden images
-themes/                               themes: WIN95 (default), WIN98, WINME, WINXP (RedmondExperience), WIN11 (Redmond-11), SLATE
+themes/                               themes: WIN95 (default), WIN98, WINME, WINXP (RedmondExperience), WIN11 (Redmond-11), OS9 (Cupertino Platinum), OSX (Cupertino Aqua), SLATE
 tools/                                generators, emulator tests (tools/emu), release packaging (tools/release)
 ```
 

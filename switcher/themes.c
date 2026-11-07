@@ -26,6 +26,7 @@ static HINSTANCE inst;
 static char home[144];              /* directory of THEMES.EXE, with '\' */
 static char ini[160];               /* RETHEME.INI */
 static char dirs[MAX_THEMES][13];   /* theme directory names */
+static int  orders[MAX_THEMES];     /* their [Theme] Order= */
 static int  ndirs;
 
 /* ---- preview -------------------------------------------------------- */
@@ -130,11 +131,20 @@ static int fill_list(HWND list)
         if (!GetPrivateProfileString("Theme", "Name", "", name, sizeof(name), path))
             continue;
         lstrcpy(dirs[ndirs], ff.name);
-        i = (int)SendMessage(list, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name);
+        /* in the order of [Theme] Order= (themes without it last), then
+           by directory name */
+        orders[ndirs] = GetPrivateProfileInt("Theme", "Order", 1000, path);
+        for (i = 0; i < ndirs; i++) {
+            int d = (int)SendMessage(list, LB_GETITEMDATA, i, 0);
+            if (orders[d] > orders[ndirs]
+                || (orders[d] == orders[ndirs] && lstrcmpi(dirs[d], dirs[ndirs]) > 0))
+                break;
+        }
+        i = (int)SendMessage(list, LB_INSERTSTRING, i, (LPARAM)(LPSTR)name);
         SendMessage(list, LB_SETITEMDATA, i, ndirs);
         ndirs++;
     }
-    /* sorted list: find the current theme after all are in */
+    /* find the current theme after all are in */
     for (i = 0; i < ndirs; i++) {
         int d = (int)SendMessage(list, LB_GETITEMDATA, i, 0);
         if (lstrcmpi(dirs[d], base) == 0)

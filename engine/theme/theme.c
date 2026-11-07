@@ -689,6 +689,16 @@ static int parse_op(Loader *L, int sec)
             op->c[2] = (rt_u8)color_ref(t, s);
             op->flags |= RT_OPF_SHADOW;
         }
+        /* Back=: a band behind the text (BackPad= pixels wider on both
+           sides), e.g. the gap in the stripes of a Platinum caption */
+        s = rt_ini_get_in(ini, sec, "Back");
+        if (s) {
+            op->c[3] = (rt_u8)color_ref(t, s);
+            op->flags |= RT_OPF_BACK;
+            n = rt_parse_ints(rt_ini_get_in(ini, sec, "BackPad"), v, 1);
+            if (n == 1)
+                op->m[0] = (rt_s16)v[0];
+        }
         s = rt_ini_get_in(ini, sec, "Align");
         op->style = RT_ALIGN_AUTO;
         if (s) {

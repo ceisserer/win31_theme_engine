@@ -19,6 +19,7 @@ build/host/preview themes/MYTHEME out/         # one theme; warnings are printed
 |---|---|
 | `Name` | Display name |
 | `Author`, `Version` | Free text |
+| `Order` | Where theme lists put the theme (Setup, `THEMES.EXE`): ascending, then by directory name; themes without it come last. The bundled themes use 10 (`WIN95`) to 80 (`SLATE`) in steps of 10. |
 | `Format` | Format version the theme needs. Themes with a higher number than the engine supports are refused. Current: `1`. |
 | `Base` | Parent theme (directory name). Every part the theme does not define is taken from the parent. Looked up next to the theme first, then in the installed `THEMES` directory. `WIN95` is a good base for partial themes. |
 | `ColorMode` | `System` (default): `Sys:` colours follow the Control Panel. `Fixed`: same, reserved for themes that set their own colours. |
@@ -30,7 +31,7 @@ Settings for shells that draw their own taskbar and Start menu. The engine ignor
 
 | Key | Meaning |
 |---|---|
-| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. `11`: the Windows 11 taskbar and Start menu (`WIN11` sets it). NewShell16's Open and Save As dialogs (`NSDLG.DLL`, for every program) follow it as well: the Windows XP dialog with the places bar for `XP`, the Windows 11 dialog for `11`, else the Windows 95 one. |
+| `Style` | `XP`: the shell draws its taskbar, Start button and Start menu in the Windows XP "Luna" style while the theme runs (`WINXP` sets it). Anything else or missing: the shell's own (Windows 95) look. `11`: the Windows 11 taskbar and Start menu (`WIN11` sets it). `OS9`: the grey Platinum taskbar and Start menu (`OS9` sets it). `OSX`: the Aqua Start button on a brushed metal taskbar and pinstriped Start menu (`OSX` sets it). NewShell16's Open and Save As dialogs (`NSDLG.DLL`, for every program) follow it as well: the Windows XP dialog with the places bar for `XP`, the Windows 11 dialog for `11`, else the Windows 95 one. |
 
 ### `[Metrics]`
 
@@ -214,13 +215,13 @@ disabled look); `Size=w,h` (scaled, default natural size); `Offset=x,y`.
 | `Recolor` | `1`: apply `[Recolor]` |
 
 Use 16-colour bitmaps where possible: most Windows 3.x systems run at 16 or 256 colours, and GDI memory is limited
-(at most 16 images per theme). A theme made for high-colour displays (like `WINXP` and `WIN11`) can use 24-bpp bitmaps: GDI
+(at most 16 images per theme). A theme made for high-colour displays (like `WINXP`, `WIN11`, `OS9` and `OSX`) can use 24-bpp bitmaps: GDI
 maps them to the nearest colours on 16- and 256-colour displays. Bitmaps are kept as device bitmaps, outside the
 GDI heap; their size counts against global memory only (2 bytes per pixel at 65536 colours).
 
 ### `Text`
 
-`Font=`, `Color=`, `Shadow=` (drawn 1 pixel down and right first), `Align=Auto|Left|Center|Right` (`Auto`: as
+`Font=`, `Color=`, `Shadow=` (drawn 1 pixel down and right first), `Back=` (a colour filled behind the text first, as high as the rectangle and `BackPad=` pixels wider than the text on both sides: the gap for the title in the grooves of the `OS9` caption), `Align=Auto|Left|Center|Right` (`Auto`: as
 Windows would align it), `Offset=x,y`. The text itself comes from Windows (window title, menu item, button label).
 Text is centred vertically in the rectangle.
 
