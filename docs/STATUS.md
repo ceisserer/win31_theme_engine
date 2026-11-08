@@ -71,6 +71,7 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Default theme `WIN95` "Redmond 95" (procedural only); `WIN98` "Redmond 98" and `WINME` "Redmond ME" (derived; `WINME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
 | `WINXP` "RedmondExperience": Windows XP Luna look, self-contained (no `Base=`, one theme in memory), 6 24-bpp bitmaps (about 31 KB of files) drawn by a generator, `[Shell] Style=XP` for NewShell16 | `themes/WINXP`, `tools/gen_winxp.py` | previews, golden images, Windows 3.1 at 16 bit |
 | `WIN11` "Redmond-11": Windows 11 light look, self-contained, 5 24-bpp bitmaps (about 34 KB of files) drawn by a generator; `PushButtonText.Default` for the white label of the accent-coloured default button | `themes/WIN11`, `tools/gen_win11.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
+| `OS9` "Cupertino Platinum" and `OSX` "Cupertino Aqua": the classic Macintosh Platinum and the first Aqua look, self-contained, 24-bpp bitmaps drawn by generators; `Text` `Back=` for the title gap of the Platinum caption; `[Theme] Order=` for theme lists | `themes/OS9`, `themes/OSX`, `tools/gen_os9.py`, `tools/gen_osx.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
 | Host tools: software backend, PNG writer, previewer, test suite | `host/` | — |
 | Win16 runtime: patch engine (alias selectors, JMP FAR, arm/disarm per reason, suspend/resume, permanent patches), hooks, one-shot subclassing with post-processing of the result, per-window state, log ring buffer, trace levels 1/2 | `engine/win16/` | Windows |
 | Interceptors: `PatBlt`, `BitBlt`, `StretchBlt`, `ExtTextOut`, `TextOut`, `Rectangle`, `LineTo`, `Polyline`, `SetPixel`, `FastWindowFrame`, `GetTextExtent`, `GetTextExtentPoint`, `PtInRect`, `SysErrorBox`, `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` | `engine/win16/intercept.c`, `scroll.c` | Windows |
@@ -104,6 +105,9 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * `WIN11`: as `WINXP` (caption height, no hot-tracking, corners in the desktop colour); the frame is USER's
   thick sizing frame, not Windows 11's 1-pixel border; popup menus are square; fonts are Arial and MS Sans Serif
   (no Segoe UI on Windows 3.1). With NewShell16 as the shell the taskbar and Start menu follow (`[Shell] Style=11`).
+* `OS9`, `OSX`: the caption keeps USER's height; buttons have no inactive state (Aqua's gel buttons stay coloured
+  in inactive windows); dialogs are plain grey, not pinstriped (static controls paint the dialog colour); the
+  caption icon is left out (Alt+Space opens the system menu); fonts are Arial and MS Sans Serif.
 
 ## Next steps
 

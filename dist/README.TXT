@@ -25,8 +25,8 @@ Silent installation (for scripts and network installs):
   SETUP /S [/D=C:\RETHEME] [/T=WIN95] [/NOLOAD] [/NOGROUP] [/NOSTART]
 
   /D=dir      installation directory
-  /T=theme    theme directory name: WIN95, WIN98, WINME, WINXP, WIN11
-              or SLATE
+  /T=theme    theme directory name: WIN95, WIN98, WINME, WINXP, WIN11,
+              OS9, OSX or SLATE
   /NOLOAD     do not start Retheme16 with Windows
   /NOGROUP    no Program Manager group
   /NOSTART    do not start Retheme16 after installing

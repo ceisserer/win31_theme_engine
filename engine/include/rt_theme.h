@@ -41,7 +41,7 @@ enum RtOpType {
     RT_OP_BORDER,       /* c[0], m[0] = width */
     RT_OP_GLYPH,        /* style = glyph, c[0] (c[1] second colour), m[0..1] = size (0 = auto) */
     RT_OP_BITMAP,       /* image, r = source, style = sizing, m = margins */
-    RT_OP_TEXT,         /* font, c[0], c[1] = shadow, style = align, r[0..1] = offset */
+    RT_OP_TEXT,         /* font, c[0], c[2] = shadow, c[3] = back, m[0] = back pad, style = align, r[0..1] = offset */
     RT_OP_FOCUS,        /* dotted focus rectangle */
     RT_OP_LAYERS        /* layers[0..nlayers-1] */
 };
@@ -69,9 +69,10 @@ enum RtEdge {
 /* RtOp.flags */
 #define RT_OPF_KEYED    0x01    /* bitmap: colour key transparency */
 #define RT_OPF_EMBOSS   0x02    /* text/glyph: Win95 disabled emboss */
-#define RT_OPF_SHADOW   0x04    /* text: drop shadow in c[1] */
+#define RT_OPF_SHADOW   0x04    /* text: drop shadow in c[2] */
 #define RT_OPF_VCENTER  0x08    /* text: centre vertically (default) */
 #define RT_OPF_INNER    0x10    /* edge: c[4] fill only inside the edge */
+#define RT_OPF_BACK     0x20    /* text: fill c[3] behind the text first */
 
 typedef struct RtOp {
     rt_u8  type;

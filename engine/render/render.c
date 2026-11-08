@@ -230,6 +230,13 @@ static void draw_text(RtSurface *s, const RtRect *r, const RtTheme *t, const RtO
     x = tl.x;
     y = tl.y;
     h = tl.h;
+    if ((op->flags & RT_OPF_BACK) && tl.n > 0 && get_color(t, op->c[3], &sc)) {
+        int bl = x - op->m[0], br = x + tl.w + op->m[0];
+        if (bl < r->left) bl = r->left;
+        if (br > r->right) br = r->right;
+        if (bl < br)
+            fill(s, bl, r->top, br, r->bottom, sc);
+    }
     if ((op->flags & RT_OPF_SHADOW) && get_color(t, op->c[2], &sc)) {
         bk_text(s, tl.f, x + 1, y + 1, r, tl.buf, tl.n, sc);
         if (tl.ul >= 0) {

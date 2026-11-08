@@ -153,7 +153,7 @@ static void test_theme_classic(void)
 static void test_theme_bundled(void)
 {
     static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE",
-                                        "themes/WINXP", "themes/WIN11" };
+                                        "themes/WINXP", "themes/WIN11", "themes/OS9", "themes/OSX" };
     int i;
     for (i = 0; i < (int)(sizeof(dirs) / sizeof(dirs[0])); i++) {
         RtTheme *t = rt_theme_load(dirs[i]);
@@ -163,9 +163,10 @@ static void test_theme_bundled(void)
         if (t->log[0])
             fprintf(stderr, "%s warnings:\n%s", dirs[i], t->log);
         CHECK_EQ(t->nwarn, 0);
-        /* WIN95, WINXP and WIN11 are complete; the others derive from WIN95 */
+        /* WIN95, WINXP, WIN11, OS9 and OSX are complete; the others derive from WIN95 */
         CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0 || strcmp(dirs[i], "themes/WINXP") == 0
-              || strcmp(dirs[i], "themes/WIN11") == 0);
+              || strcmp(dirs[i], "themes/WIN11") == 0 || strcmp(dirs[i], "themes/OS9") == 0
+              || strcmp(dirs[i], "themes/OSX") == 0);
         rt_theme_free(t);
     }
 }
@@ -206,6 +207,48 @@ static void test_theme_win11(void)
           != rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_NORMAL, 0));
     CHECK(rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_DEFAULTPRESSED, 0)
           == rt_theme_find(t, RT_PART_PUSHBUTTONTEXT, RT_ST_PRESSED, 0));
+    rt_theme_free(t);
+}
+
+/* Text Back=: Cupertino Platinum cuts a gap for the title into the
+ * grooves of the caption, BackPad= pixels wider than the text on both
+ * sides, and only as high as the rectangle */
+static void test_text_back(void)
+{
+    RtTheme *t = rt_theme_load("themes/OS9");
+    RtSurface *s;
+    RtDrawReq q;
+    int x, first = -1, last = -1;
+    CHECK(t != 0);
+    if (!t)
+        return;
+    s = sw_surface_create(200, 20, RT_RGB(255, 0, 0));
+    memset(&q, 0, sizeof(q));
+    q.part = RT_PART_CAPTIONTEXT;
+    q.state = RT_ST_ACTIVE;
+    rt_rect_set(&q.rc, 0, 2, 200, 18);
+    q.text = "Title";
+    q.textlen = -1;
+    CHECK(rt_render(t, s, &q));
+    for (x = 0; x < 200; x++)
+        if (s->px[2 * 200 + x] != 0xFF0000) {
+            if (first < 0)
+                first = x;
+            last = x;
+        }
+    CHECK(first > 0 && last < 199);
+    CHECK_EQ(s->px[2 * 200 + first], 0xC0C0C0);         /* Face (Sys:BtnFace) */
+    CHECK_EQ(s->px[2 * 200 + last], 0xC0C0C0);
+    CHECK_EQ((first + last) / 2, 99);                   /* centred */
+    CHECK_EQ(s->px[1 * 200 + first], 0xFF0000);         /* not above the rectangle */
+    CHECK_EQ(s->px[18 * 200 + first], 0xFF0000);
+    /* the inactive title has no band */
+    q.state = RT_ST_INACTIVE;
+    for (x = 0; x < 200 * 20; x++)
+        s->px[x] = 0xFF0000;
+    CHECK(rt_render(t, s, &q));
+    CHECK_EQ(s->px[2 * 200 + first], 0xFF0000);
+    sw_surface_free(s);
     rt_theme_free(t);
 }
 
@@ -458,6 +501,9 @@ int main(int argc, char **argv)
     test_theme_selfcontained("themes/WINXP", "RedmondExperience");
     test_theme_selfcontained("themes/WIN11", "Redmond-11");
     test_theme_win11();
+    test_theme_selfcontained("themes/OS9", "Cupertino Platinum");
+    test_theme_selfcontained("themes/OSX", "Cupertino Aqua");
+    test_text_back();
     test_theme_syscolors();
     test_theme_bitmap();
     test_layout();
@@ -467,6 +513,8 @@ int main(int argc, char **argv)
     golden("themes/SLATE", "slate");
     golden("themes/WINXP", "winxp");
     golden_ex("themes/WIN11", "win11", 1);
+    golden_ex("themes/OS9", "os9", 1);
+    golden_ex("themes/OSX", "osx", 1);
     golden("host/tests/data/BMPTEST", "bmptest");
     printf("%d checks, %d failures%s\n", checks, failures, update_golden ? " (golden images updated)" : "");
     return failures ? 1 : 0;
