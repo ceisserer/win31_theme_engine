@@ -1,5 +1,5 @@
 #! --gallery "" --boot 50
-# Menus follow the mouse without a button held (Win95): hover into a
+# Menus follow the mouse without a button held (as in Redmond 95): hover into a
 # sub-menu, switch menus on the menu bar, choose an item by clicking;
 # a menu opened with the keyboard stays open while the mouse moves outside
 # it; clicking the open title or outside closes the menu; system menu.

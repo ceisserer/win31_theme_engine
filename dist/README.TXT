@@ -1,11 +1,11 @@
 Retheme16 @VERSION@
 ==================
 
-Retheme16 gives Windows 3.1 and Windows for Workgroups 3.11 the look of
-Windows 95: title bars with the Windows 95 buttons, 3D dialog controls,
-grey menus and Windows 95 scroll bars. Other looks come as themes, among
-them RedmondExperience, the blue look of Windows XP (best with a display
-driver for 65536 or more colours).
+Retheme16 gives Windows 3.1 and Windows for Workgroups 3.11 the Redmond 95
+look: title bars with 3D buttons, 3D dialog controls, grey menus and 3D
+scroll bars. Other looks come as themes, among them RedmondExperience, a
+blue, rounded look, Redmond-11, a light, flat one, and Cupertino Platinum
+and Aqua (best with a display driver for 65536 or more colours).
 
 Requirements: Windows 3.1 or Windows for Workgroups 3.11, Standard or
 386 Enhanced mode, 16, 256 or more colours.

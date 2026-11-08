@@ -44,7 +44,7 @@ Settings for shells that draw their own taskbar and Start menu. The engine ignor
 | `Layout` | `Icon,Title,Min,Max,Gap,Close` | Caption layout. Tokens before `Title` are placed left to right from the left edge, tokens after it right to left from the right edge. Tokens: `Icon`, `Title`, `Min`, `Max`, `Close`, `Gap`. |
 | `CaptionHeight`, `BorderWidth` | 0 | Reserved (plan phase 8); ignored by format 1 |
 
-Win95 rules the engine applies regardless of the layout: min and max always appear together (the missing one
+Redmond 95 rules the engine applies regardless of the layout: min and max always appear together (the missing one
 disabled), close needs a system menu, and windows with `WS_EX_DLGMODALFRAME` show no icon.
 
 ### `[Colors]`
@@ -71,7 +71,7 @@ A colour value is one of:
 ### `[SysColors]`
 
 System colours the engine sets while the theme is active, for a look whose colours differ from the Control
-Panel's (`REDME`: the beige Windows ME scheme). Keys are the `Sys:` names above, values literal `r,g,b`:
+Panel's (`REDME`: its beige scheme). Keys are the `Sys:` names above, values literal `r,g,b`:
 
 ```ini
 [SysColors]
@@ -166,7 +166,7 @@ At most 6 layers, nesting up to 4 levels.
 
 ### `Fill`, `Dither`
 
-`Color=`; `Dither` also `Color2=` (50 % checkerboard, as used for Win95 scroll bar tracks).
+`Color=`; `Dither` also `Color2=` (50 % checkerboard, as used for Redmond 95 scroll bar tracks).
 
 ### `Gradient`
 
@@ -200,7 +200,7 @@ A built-in shape centred in the rectangle: `Glyph=` one of `Close`, `Min`, `Max`
 `SizeGrip`.
 
 `Color=`; `Color2=` (second colour: bottom-right half of `RadioOuter`/`RadioInner`, dark lines of `SizeGrip`);
-`Shadow=` (drawn first, 1 pixel down and right: with `Color=BtnShadow` and `Shadow=BtnHighlight` this is the Win95
+`Shadow=` (drawn first, 1 pixel down and right: with `Color=BtnShadow` and `Shadow=BtnHighlight` this is the Redmond 95
 disabled look); `Size=w,h` (scaled, default natural size); `Offset=x,y`.
 
 ### `Bitmap`
@@ -228,7 +228,7 @@ Text is centred vertically in the rectangle.
 ### `Focus`
 
 The dotted focus rectangle (XOR). Push buttons hand it the whole button rectangle, so its `Inset` is the distance
-from the button edge (Windows 95: 4, Windows XP: 3). Where that would put the rectangle through the label (Windows
+from the button edge (Redmond 95: 4, RedmondExperience: 3). Where that would put the rectangle through the label (Windows
 3.1 dialogs often have lower buttons), the engine grows it to run one pixel around the label.
 
 ## 4. Limits

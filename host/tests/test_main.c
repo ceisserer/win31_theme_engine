@@ -117,7 +117,7 @@ static void test_theme_classic(void)
     CHECK(strcmp(t->name, "Redmond 95") == 0);
     CHECK_EQ(t->metrics.btn_w, 16);
     CHECK_EQ(t->metrics.btn_h, 14);
-    /* Classic95 must define every part (it is the root of all themes);
+    /* Redmond 95 must define every part (it is the root of all themes);
      * window parts have Active/Inactive instead of Normal. */
     for (p = 0; p < RT_PART_COUNT; p++) {
         int ok = rt_theme_find(t, p, RT_ST_NORMAL, &owner) != 0

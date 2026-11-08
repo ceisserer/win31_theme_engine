@@ -1,14 +1,14 @@
-# Implementation plan: an open-source, themeable Win95-look engine for Windows 3.x
+# Implementation plan: an open-source, themeable look engine for Windows 3.x
 
 Working name: **Retheme16** (placeholder, rename freely).
 
 Goal:
 
-1. Reproduce the Windows 95 look on Windows 3.1 and WfW 3.11 (protected mode only; Windows 3.0 and real mode are
+1. Reproduce the Redmond 95 look on Windows 3.1 and WfW 3.11 (protected mode only; Windows 3.0 and real mode are
    out of scope) as faithfully as possible:
    title bars, caption buttons, frames, 3D controls, grey dialogs, menus, scrollbars, desktop, fonts.
 2. The look is **not hard-coded**. It comes from a **theme** (an INI file plus bitmaps),
-   so users can make and share their own. The Win95 look is just the default theme.
+   so users can make and share their own. The Redmond 95 look is just the default theme.
 
 ---
 
@@ -18,7 +18,7 @@ Goal:
 |---|---|---|
 | D1 | **System-wide hooks, one-shot subclassing and GDI/USER code patches** that are armed only while USER paints something we restyle. | A subclass-only design leaves menus, USER's tracking loops and out-of-`WM_PAINT` repaints in the 3.1 look. GDI interception catches every route and keeps USER's behaviour. |
 | D2 | **Split "recognising" from "rendering".** Interceptors never draw. They turn USER's GDI call into a semantic *draw request* (`part`, `state`, `rect`, `hwnd`, `hdc`), and the theme renderer draws it. | This split is the core design decision. It makes themes possible and lets the renderer be tested on Linux. |
-| D3 | **The Win95 look is a theme ("Classic95"), not code.** It is built from procedural primitives (3D edges, vector glyphs, fills, text). | Proves the theme system is complete. Needs no Microsoft artwork. Scales to any button size (EGA, VGA, 8514 "large fonts"). |
+| D3 | **The Redmond 95 look is a theme, not code.** It is built from procedural primitives (3D edges, vector glyphs, fills, text). | Proves the theme system is complete. Needs no Microsoft artwork. Scales to any button size (EGA, VGA, 8514 "large fonts"). |
 | D4 | **USER geometry is data, per USER build** ("USER profile"), plus an optional run-time **self-calibration**. | Version drift (3.1 / WfW / localised builds) is the biggest correctness risk. |
 | D5 | **A geometry transform layer** maps between USER's layout and the theme's layout, in both directions. | Lets themes move buttons around and, in a later phase, change caption height. |
 | D6 | **Portable C core.** The parser, renderer, geometry and recogniser are plain C89 behind a small backend interface. They are built twice: Win16 (Open Watcom) and Linux (gcc) for unit tests, trace replay and theme previews. | Most bugs get caught without booting an emulator. Theme authors get a previewer. |
@@ -101,7 +101,7 @@ OBM strip offset). The renderer holds all the knowledge of how things look. Neit
 | Desktop | `Desktop` (fill/gradient), `IconTitle` | Normal, Selected |
 | Misc | `MDIClient.Back`, `TaskSwitch` (Alt+Tab box), `MsgBox.Icon.*` (later) | – |
 
-Every part has a fallback chain: *theme state → theme Normal state → `Base=` theme → built-in Classic95 → passthrough*.
+Every part has a fallback chain: *theme state → theme Normal state → `Base=` theme → built-in Redmond 95 → passthrough*.
 
 ---
 
@@ -149,7 +149,7 @@ Light=Sys:BtnHighlight
 Shadow=Sys:BtnShadow
 DkShadow=0,0,0
 Title1=Sys:ActiveCaption
-Title2=Sys:ActiveCaption ; = Title1 → plain fill, otherwise gradient (Win98 style)
+Title2=Sys:ActiveCaption ; = Title1 → plain fill, otherwise gradient (Redmond 98 style)
 ApplySysColors=0         ; 1 = call SetSysColors from [SysColors] (and restore on unload)
 
 [Fonts]                  ; Face,PointSize,Weight[,Italic]
@@ -199,7 +199,7 @@ Recolor=System           ; placeholder colours → system colours
 Rules:
 * A section is one **op**. `Layers=` composes several ops, painted in order.
 * State sections are named `<Part>.<State>`. A missing state falls back as described in 2.2.
-* `Sys:<Name>` colours are re-resolved on `WM_SYSCOLORCHANGE`, so themes can follow Control Panel colours like Win95 does.
+* `Sys:<Name>` colours are re-resolved on `WM_SYSCOLORCHANGE`, so themes can follow Control Panel colours.
 * **Placeholder recolouring**: a theme may declare `[Recolor]` key colours (e.g. `255,255,0=Face`) that are
   replaced at load time. That lets one bitmap set follow any colour scheme.
 * Optional extras a theme may set (and the engine restores on unload): wallpaper (`SPI_SETDESKWALLPAPER`),
@@ -372,18 +372,18 @@ emulator-bound phases.
 |---|---|---|---|
 | **0. Environment** | Toolchain on Linux; emulator images (3.1, German 3.1, WfW 3.11); Win95 reference screenshots from online sources; debug kernel; build/deploy loop; `GALLERY.EXE` and `PROFILER.EXE` v0; a reference screenshot set for every gallery scene. | One command builds, deploys and screenshots a gallery scene. | 3–4 wk |
 | **1. Runtime skeleton** | Loader, DLL, hooks, dispatcher, classification cache, window state, patch engine with arm/disarm, fault handler, `SysErrorBox` emergency path, logging/tracing, safe unload. | Trace of a full Program Manager session; 1000× load/unload with no resource leak and no crash. | 6–8 wk |
-| **2. Theme model + renderer** (portable) | INI/`.T16` loader, part table, fallbacks, all render ops, vector glyphs, GDI and software backends, `themec lint/pack/preview`, Classic95 theme v0. | Previewer renders a complete Win95 window mock from Classic95; host tests green in CI. | 4–6 wk |
-| **3. Non-client area** | USER 3.1 profile + calibration; recognisers for caption fill, title text, OBM glyph blits, `FastWindowFrame`; layout transform; caption icon; Win95 button rules; hit-test rewriting; min/max tracking; own close button; MDI children and maximised MDI. | Every gallery window type matches the Win95 look; dragging, sizing, min/max/close, system menu, MDI all behave as on plain 3.1. | 8–12 wk |
-| **4. Controls** | `WM_CTLCOLOR` grey; font swap + dialog relayout; push buttons (incl. `BM_SETSTATE` repaints); check/radio; group boxes; statics + embossed disabled text; edit/list/combo borders; combo button; scrollbars incl. `SetScrollPos`/`SetScrollRange`/`EnableScrollBar`; VB/BWCC/Clarion classes; CTL3D coexistence. | Gallery dialogs and the VB3/Delphi/BC++ test apps match the Win95 look; no visual "flicker back" to 3.1 on clicks/keys. | 6–10 wk |
-| **5. Menus** | Menu bar and popups (`#32768`), selection bar, separators, check marks, sub-menu arrows, disabled emboss, `GetTextExtent` patch, keyboard and mouse menu tracking, system menu items for the engine. | Menus in Program Manager, Word 6 and Excel 5 match the Win95 look; item widths correct. | 4–6 wk |
-| **6. Desktop & misc** | Desktop gradient + `WM_ICONERASEBKGND`, icon titles (`SetDCOrg`), Alt+Tab switcher, task list, message boxes. | **Milestone 1.0-preview: "Win95 look on 3.1"** implemented on 3.1 (VGA + SVGA 256). | 3–4 wk |
+| **2. Theme model + renderer** (portable) | INI/`.T16` loader, part table, fallbacks, all render ops, vector glyphs, GDI and software backends, `themec lint/pack/preview`, Redmond 95 theme v0. | Previewer renders a complete window mock from Redmond 95; host tests green in CI. | 4–6 wk |
+| **3. Non-client area** | USER 3.1 profile + calibration; recognisers for caption fill, title text, OBM glyph blits, `FastWindowFrame`; layout transform; caption icon; Redmond 95 button rules; hit-test rewriting; min/max tracking; own close button; MDI children and maximised MDI. | Every gallery window type matches the Redmond 95 look; dragging, sizing, min/max/close, system menu, MDI all behave as on plain 3.1. | 8–12 wk |
+| **4. Controls** | `WM_CTLCOLOR` grey; font swap + dialog relayout; push buttons (incl. `BM_SETSTATE` repaints); check/radio; group boxes; statics + embossed disabled text; edit/list/combo borders; combo button; scrollbars incl. `SetScrollPos`/`SetScrollRange`/`EnableScrollBar`; VB/BWCC/Clarion classes; CTL3D coexistence. | Gallery dialogs and the VB3/Delphi/BC++ test apps match the Redmond 95 look; no visual "flicker back" to 3.1 on clicks/keys. | 6–10 wk |
+| **5. Menus** | Menu bar and popups (`#32768`), selection bar, separators, check marks, sub-menu arrows, disabled emboss, `GetTextExtent` patch, keyboard and mouse menu tracking, system menu items for the engine. | Menus in Program Manager, Word 6 and Excel 5 match the Redmond 95 look; item widths correct. | 4–6 wk |
+| **6. Desktop & misc** | Desktop gradient + `WM_ICONERASEBKGND`, icon titles (`SetDCOrg`), Alt+Tab switcher, task list, message boxes. | **Milestone 1.0-preview: "Redmond 95 look on 3.1"** implemented on 3.1 (VGA + SVGA 256). | 3–4 wk |
 | **7. Theme engine 1.0** | All parts skinnable, bitmap 9-grid/tile/colour key/recolour, colour-depth variants, live theme switching (`RedrawWindow` with `RDW_FRAME`/`RDW_ALLCHILDREN` for every top-level window), restore of colours/wallpaper/sounds/border, `THEMES.CPL` with preview, resource budget checks, authoring guide, 3–4 sample themes. | Theme switching 100× without leaks; a third party can build a theme from the guide alone. | 6–10 wk |
 | **8. Variable metrics** (experimental) | Caption height, button size/position from theme; `WM_NCCALCSIZE` post-processing; vertical layout deltas for menu bar and hit-testing; per-app opt-out for applications that compute non-client sizes themselves. | Sample theme with a 24 px caption works in the app matrix, or is disabled per app. | 6–10 wk |
 | **9. Compatibility** | WfW 3.11 and localised profiles; display driver matrix; application matrix. | Test matrix (6.3) green or documented. | 6–12 wk |
 | **10. Release** | Installer, uninstaller, documentation (text/HTML; WinHelp optional), theme gallery, bug tracker triage. | 1.0 release. | 3–4 wk |
 | | **Total** | | **55–86 wk ≈ 13–20 months** |
 
-Estimate: the faithful Win95 clone alone is 9–18 months; the theme layer, the portable
+Estimate: the faithful Redmond 95 look alone is 9–18 months; the theme layer, the portable
 core and variable metrics add about 3–4 months, and the host test infrastructure pays some of that back by
 shortening phases 3–5 and 9.
 
@@ -412,7 +412,7 @@ If spike 3 fails, profiles are hand-written per build (more work in phase 9, no 
 | Display drivers with odd OBM sizes / accelerated `FastWindowFrame` | Missing or misplaced decorations | Calibration; driver matrix; passthrough fallback |
 | Dialog relayout after font swap (only partly understood) | Clipped dialog text | Separate investigation; theme option to keep the System font |
 | Variable metrics breaking apps | Layout glitches | Experimental flag, per-app opt-out, off by default |
-| Legal (Microsoft artwork) | Project takedown | Original artwork only (D7); procedural Classic95 |
+| Legal (Microsoft artwork) | Project takedown | Original artwork only (D7); procedural Redmond 95 |
 
 ---
 

@@ -1,16 +1,16 @@
 # win31_theme_engine
 
-Open-source, themeable engine that brings the Windows 95 look, the Windows XP "Luna" look (theme
-RedmondExperience), the light Windows 11 look (theme Redmond-11), the grey Platinum and the glossy Aqua look (themes
+Open-source, themeable engine that brings the classic 3D look (theme Redmond 95), a blue, rounded look (theme
+RedmondExperience), a light, flat look (theme Redmond-11), the grey Platinum and the glossy Aqua look (themes
 Cupertino Platinum and Cupertino Aqua) and custom, skinnable themes to Windows 3.1 and Windows for Workgroups 3.11. Working name:
 Retheme16.
 
-![Classic95 theme preview](host/tests/golden/red95_window.png)
-![Classic95 dialog preview](host/tests/golden/red95_dialog.png)
+![Redmond 95 theme preview](host/tests/golden/red95_window.png)
+![Redmond 95 dialog preview](host/tests/golden/red95_dialog.png)
 ![Slate theme preview](host/tests/golden/slate_window.png)
-![RedmondExperience (Windows XP) theme preview](host/tests/golden/redexp_window.png)
+![RedmondExperience theme preview](host/tests/golden/redexp_window.png)
 ![RedmondExperience dialog preview](host/tests/golden/redexp_dialog.png)
-![Redmond-11 (Windows 11) theme preview](host/tests/golden/red11_window.png)
+![Redmond-11 theme preview](host/tests/golden/red11_window.png)
 ![Redmond-11 dialog preview](host/tests/golden/red11_dialog.png)
 ![Cupertino Platinum theme preview](host/tests/golden/cupplat_window.png)
 ![Cupertino Platinum dialog preview](host/tests/golden/cupplat_dialog.png)
