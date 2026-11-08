@@ -11,7 +11,7 @@ Configurations:
 | Windows 3.1 (3.10.103), US English, retail and SDK debug build | 264 016 bytes | VGA 640×480×16 | `tests/emu/golden/win31` |
 | Windows 3.1, German | 264 832 bytes | VGA 640×480×16 | `tests/emu/golden/win31de` |
 | Windows 3.1 + VBE SVGA driver (vbesvga.drv) | 264 016 bytes | 640×480×256 | spot checks |
-| Windows 3.1 + VBE SVGA driver (vbesvga.drv 1.0 beta 4), theme `WINXP` | 264 016 bytes | 800×600×65536 (16 bit) | `tests/emu/golden/win31hc-xp` |
+| Windows 3.1 + VBE SVGA driver (vbesvga.drv 1.0 beta 4), theme `REDEXP` | 264 016 bytes | 800×600×65536 (16 bit) | `tests/emu/golden/win31hc-xp` |
 | Windows for Workgroups 3.11 (pre-installed) | 3.11 | VGA 640×480×16 | spot checks |
 
 All in 386 Enhanced mode. Scenarios in `tools/emu/scenarios` (`caption`, `controls`, `menus`, `menuhover`, `menukeys`, `scroll`) run
@@ -45,13 +45,13 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
   (`tools/emu/test_setup.py`).
 * **Themes:** `SLATE` (bitmaps with colour key, close button on the left, theme dialog colour) works at 16 and 256
   colours. Colours outside the system palette are dithered by GDI (expected; documented for theme authors).
-* **RedmondExperience (`WINXP`):** the Windows XP "Luna" look at 800×600 with 65536 colours: blue caption with
+* **RedmondExperience (`REDEXP`):** the Windows XP "Luna" look at 800×600 with 65536 colours: blue caption with
   rounded top corners (they take the desktop colour), round caption buttons with the red close button, rounded
   push buttons with the blue glow of the default button, green check marks and radio dots, light blue scroll bars
   and combo buttons, white menus with a grey border, the Luna colour scheme as system colours. Also runs at 256 and
   16 colours (nearest colours; the theme's own literal colours are dithered there). With NewShell16 as the shell the
-  taskbar and Start menu follow (`[Shell] Style=XP`).
-* **Redmond-11 (`WIN11`):** the light Windows 11 look at 800×600 with 65536 colours (Windows 3.1, VBE driver,
+  taskbar and Start menu follow (`[Shell] Style=Experience`).
+* **Redmond-11 (`RED11`):** the light Windows 11 look at 800×600 with 65536 colours (Windows 3.1, VBE driver,
   GALLERY dialogs): light caption with dark text and rounded corners, flat caption buttons, rounded push buttons
   with the blue default button and its white label, blue check boxes and radio buttons, thin scroll bar thumbs,
   light menus with a rounded highlight, the Windows 11 light colours as system colours. No emulator golden set
@@ -68,10 +68,10 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 | Built-in glyphs (caption buttons, arrows, check marks, radio parts, size grip), original pixel art | `engine/render/glyphs.c` | golden images |
 | Theme layout of the non-client area (Win95 button rules, configurable layout) | `engine/geom/nclayout.c` | host tests |
 | USER 3.1 caption model (measured: bar `SM_CYSIZE` high, boxes `SM_CXSIZE+1` wide, dialog frame `SM_CXDLGFRAME` + border, menu bar `SM_CYMENU` + line) and theme→USER point mapping | `engine/geom/nclayout.c`, `engine/win16/ncpaint.c` | Windows 3.1 (US, German), WfW 3.11 |
-| Default theme `WIN95` "Redmond 95" (procedural only); `WIN98` "Redmond 98" and `WINME` "Redmond ME" (derived; `WINME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
-| `WINXP` "RedmondExperience": Windows XP Luna look, self-contained (no `Base=`, one theme in memory), 6 24-bpp bitmaps (about 31 KB of files) drawn by a generator, `[Shell] Style=XP` for NewShell16 | `themes/WINXP`, `tools/gen_winxp.py` | previews, golden images, Windows 3.1 at 16 bit |
-| `WIN11` "Redmond-11": Windows 11 light look, self-contained, 5 24-bpp bitmaps (about 34 KB of files) drawn by a generator; `PushButtonText.Default` for the white label of the accent-coloured default button | `themes/WIN11`, `tools/gen_win11.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
-| `OS9` "Cupertino Platinum" and `OSX` "Cupertino Aqua": the classic Macintosh Platinum and the first Aqua look, self-contained, 24-bpp bitmaps drawn by generators; `Text` `Back=` for the title gap of the Platinum caption; `[Theme] Order=` for theme lists | `themes/OS9`, `themes/OSX`, `tools/gen_os9.py`, `tools/gen_osx.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
+| Default theme `RED95` "Redmond 95" (procedural only); `RED98` "Redmond 98" and `REDME` "Redmond ME" (derived; `REDME` sets the system colours, `[SysColors]`) and `SLATE` (original, bitmaps) | `themes/`, `tools/gen_slate.py` | previews, golden images, Windows |
+| `REDEXP` "RedmondExperience": Windows XP Luna look, self-contained (no `Base=`, one theme in memory), 6 24-bpp bitmaps (about 31 KB of files) drawn by a generator, `[Shell] Style=Experience` for NewShell16 | `themes/REDEXP`, `tools/gen_redexp.py` | previews, golden images, Windows 3.1 at 16 bit |
+| `RED11` "Redmond-11": Windows 11 light look, self-contained, 5 24-bpp bitmaps (about 34 KB of files) drawn by a generator; `PushButtonText.Default` for the white label of the accent-coloured default button | `themes/RED11`, `tools/gen_red11.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
+| `CUPPLAT` "Cupertino Platinum" and `CUPAQUA` "Cupertino Aqua": a grey, bevelled and a glossy, pinstriped look, self-contained, 24-bpp bitmaps drawn by generators; `Text` `Back=` for the title gap of the Platinum caption; `[Theme] Order=` for theme lists | `themes/CUPPLAT`, `themes/CUPAQUA`, `tools/gen_cupplat.py`, `tools/gen_cupaqua.py` | previews, golden images (with the theme's `[SysColors]`), Windows 3.1 at 16 bit |
 | Host tools: software backend, PNG writer, previewer, test suite | `host/` | — |
 | Win16 runtime: patch engine (alias selectors, JMP FAR, arm/disarm per reason, suspend/resume, permanent patches), hooks, one-shot subclassing with post-processing of the result, per-window state, log ring buffer, trace levels 1/2 | `engine/win16/` | Windows |
 | Interceptors: `PatBlt`, `BitBlt`, `StretchBlt`, `ExtTextOut`, `TextOut`, `Rectangle`, `LineTo`, `Polyline`, `SetPixel`, `FastWindowFrame`, `GetTextExtent`, `GetTextExtentPoint`, `PtInRect`, `SysErrorBox`, `SetScrollPos`, `SetScrollRange`, `EnableScrollBar` | `engine/win16/intercept.c`, `scroll.c` | Windows |
@@ -99,13 +99,13 @@ their golden screenshots (`tools/emu/regress.sh`). Verified:
 * Permanent patches still missing from the plan: hook-API patches, `CallWindowProc`, `DeleteObject`, `RemoveProp`.
 * Calibration (plan 4.3), trace replay on the host, `PROFILER.EXE`: not started.
 * Not yet tested: WfW 3.11 German, large fonts, Standard mode, real application matrix (VB3, Office 4.3 ...).
-* `WINXP`: the caption keeps the height USER gives it (Windows XP's is taller); no hot-tracking (buttons do not
+* `REDEXP`: the caption keeps the height USER gives it (Windows XP's is taller); no hot-tracking (buttons do not
   light up under the mouse); the rounded frame corners are painted in the desktop colour, so they show over a
   wallpaper or another window; it is made for 15/16/24-bit displays.
-* `WIN11`: as `WINXP` (caption height, no hot-tracking, corners in the desktop colour); the frame is USER's
+* `RED11`: as `REDEXP` (caption height, no hot-tracking, corners in the desktop colour); the frame is USER's
   thick sizing frame, not Windows 11's 1-pixel border; popup menus are square; fonts are Arial and MS Sans Serif
-  (no Segoe UI on Windows 3.1). With NewShell16 as the shell the taskbar and Start menu follow (`[Shell] Style=11`).
-* `OS9`, `OSX`: the caption keeps USER's height; buttons have no inactive state (Aqua's gel buttons stay coloured
+  (no Segoe UI on Windows 3.1). With NewShell16 as the shell the taskbar and Start menu follow (`[Shell] Style=Eleven`).
+* `CUPPLAT`, `CUPAQUA`: the caption keeps USER's height; buttons have no inactive state (Aqua's gel buttons stay coloured
   in inactive windows); dialogs are plain grey, not pinstriped (static controls paint the dialog colour); the
   caption icon is left out (Alt+Space opens the system menu); fonts are Arial and MS Sans Serif.
 

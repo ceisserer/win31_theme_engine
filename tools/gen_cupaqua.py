@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
-"""Generates the bitmaps of themes/OSX, "Cupertino Aqua" (original artwork in
-the style of the first "Aqua" look of 2001: pinstripes, gel buttons; public
+"""Generates the bitmaps of themes/CUPAQUA, "Cupertino Aqua" (original artwork in
+a light, glossy style: pinstripes, gel buttons; public
 domain).
 
-Drawn with the supersampled Canvas of gen_winxp.py: edge pixels are blended
+Drawn with the supersampled Canvas of gen_redexp.py: edge pixels are blended
 with the colour the part sits on, fully transparent pixels become the colour
 key magenta (255,0,255), and the rounded top corners of the window frame
 become yellow (255,255,0), which THEME.INI recolours to the desktop colour.
 
-  python3 tools/gen_osx.py               writes themes/OSX/*.BMP
+  python3 tools/gen_cupaqua.py               writes themes/CUPAQUA/*.BMP
 """
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_winxp import Canvas, CORNER, mix, strip, rows  # noqa: E402
+from gen_redexp import Canvas, CORNER, mix, strip, rows  # noqa: E402
 from PIL import Image  # noqa: E402
-import gen_winxp  # noqa: E402
+import gen_redexp  # noqa: E402
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "OSX")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "CUPAQUA")
 
 # ---- palette ----
-# keep in sync with [SysColors] / [Colors] in themes/OSX/THEME.INI
+# keep in sync with [SysColors] / [Colors] in themes/CUPAQUA/THEME.INI
 FACE = (232, 232, 232)          # BtnFace: dialogs
 STRIPE_A = (246, 246, 246)      # pinstripes: two light rows...
 STRIPE_B = (232, 232, 232)      # ...and two darker rows
@@ -55,7 +55,7 @@ def darker(stops, f=0.75):
 
 
 def save(im, name):
-    gen_winxp.save(im, name)
+    gen_redexp.save(im, name)
 
 
 def pin_row(y):
@@ -274,7 +274,7 @@ def menusel():
 
 
 def main():
-    gen_winxp.OUT = OUT
+    gen_redexp.OUT = OUT
     os.makedirs(OUT, exist_ok=True)
     save(strip([pinstripes(False), pinstripes(True)]), "PINSTRIP.BMP")
     save(strip([frame(True), frame(False)]), "FRAME.BMP")

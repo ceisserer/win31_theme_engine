@@ -105,14 +105,14 @@ static void test_names(void)
 
 static void test_theme_classic(void)
 {
-    RtTheme *t = rt_theme_load("themes/WIN95");
+    RtTheme *t = rt_theme_load("themes/RED95");
     const RtTheme *owner;
     int p;
     CHECK(t != 0);
     if (!t)
         return;
     if (t->log[0])
-        fprintf(stderr, "WIN95 warnings:\n%s", t->log);
+        fprintf(stderr, "RED95 warnings:\n%s", t->log);
     CHECK_EQ(t->nwarn, 0);
     CHECK(strcmp(t->name, "Redmond 95") == 0);
     CHECK_EQ(t->metrics.btn_w, 16);
@@ -152,8 +152,8 @@ static void test_theme_classic(void)
 /* Every bundled theme must load without warnings. */
 static void test_theme_bundled(void)
 {
-    static const char *const dirs[] = { "themes/WIN95", "themes/WIN98", "themes/WINME", "themes/SLATE",
-                                        "themes/WINXP", "themes/WIN11", "themes/OS9", "themes/OSX" };
+    static const char *const dirs[] = { "themes/RED95", "themes/RED98", "themes/REDME", "themes/SLATE",
+                                        "themes/REDEXP", "themes/RED11", "themes/CUPPLAT", "themes/CUPAQUA" };
     int i;
     for (i = 0; i < (int)(sizeof(dirs) / sizeof(dirs[0])); i++) {
         RtTheme *t = rt_theme_load(dirs[i]);
@@ -163,15 +163,15 @@ static void test_theme_bundled(void)
         if (t->log[0])
             fprintf(stderr, "%s warnings:\n%s", dirs[i], t->log);
         CHECK_EQ(t->nwarn, 0);
-        /* WIN95, WINXP, WIN11, OS9 and OSX are complete; the others derive from WIN95 */
-        CHECK(t->base != 0 || strcmp(dirs[i], "themes/WIN95") == 0 || strcmp(dirs[i], "themes/WINXP") == 0
-              || strcmp(dirs[i], "themes/WIN11") == 0 || strcmp(dirs[i], "themes/OS9") == 0
-              || strcmp(dirs[i], "themes/OSX") == 0);
+        /* RED95, REDEXP, RED11, CUPPLAT and CUPAQUA are complete; the others derive from RED95 */
+        CHECK(t->base != 0 || strcmp(dirs[i], "themes/RED95") == 0 || strcmp(dirs[i], "themes/REDEXP") == 0
+              || strcmp(dirs[i], "themes/RED11") == 0 || strcmp(dirs[i], "themes/CUPPLAT") == 0
+              || strcmp(dirs[i], "themes/CUPAQUA") == 0);
         rt_theme_free(t);
     }
 }
 
-/* WINXP (RedmondExperience) and WIN11 (Redmond-11) are self-contained, so
+/* REDEXP (RedmondExperience) and RED11 (Redmond-11) are self-contained, so
  * only one theme is held in memory: they must define every part themselves
  * and keep to a small image budget. */
 static void test_theme_selfcontained(const char *dir, const char *name)
@@ -199,7 +199,7 @@ static void test_theme_selfcontained(const char *dir, const char *name)
  * accent colour); the other states of the label fall back as usual. */
 static void test_theme_win11(void)
 {
-    RtTheme *t = rt_theme_load("themes/WIN11");
+    RtTheme *t = rt_theme_load("themes/RED11");
     CHECK(t != 0);
     if (!t)
         return;
@@ -215,7 +215,7 @@ static void test_theme_win11(void)
  * sides, and only as high as the rectangle */
 static void test_text_back(void)
 {
-    RtTheme *t = rt_theme_load("themes/OS9");
+    RtTheme *t = rt_theme_load("themes/CUPPLAT");
     RtSurface *s;
     RtDrawReq q;
     int x, first = -1, last = -1;
@@ -257,14 +257,14 @@ static void test_theme_syscolors(void)
 {
     rt_u8 idx[RT_SYS_COUNT];
     RtColor rgb[RT_SYS_COUNT];
-    RtTheme *t = rt_theme_load("themes/WIN98");
+    RtTheme *t = rt_theme_load("themes/RED98");
     int i, n;
     CHECK(t != 0);
     if (t) {
         CHECK_EQ(rt_theme_syscolors(t, idx, rgb), 0);
         rt_theme_free(t);
     }
-    t = rt_theme_load("themes/WINME");
+    t = rt_theme_load("themes/REDME");
     CHECK(t != 0);
     if (!t)
         return;
@@ -327,7 +327,7 @@ static void test_theme_bitmap(void)
 
 static void test_layout(void)
 {
-    RtTheme *t = rt_theme_load("themes/WIN95");
+    RtTheme *t = rt_theme_load("themes/RED95");
     RtNcIn in;
     RtNcLayout l;
     RtUserNc u;
@@ -498,23 +498,23 @@ int main(int argc, char **argv)
     test_theme_classic();
     test_theme_errors();
     test_theme_bundled();
-    test_theme_selfcontained("themes/WINXP", "RedmondExperience");
-    test_theme_selfcontained("themes/WIN11", "Redmond-11");
+    test_theme_selfcontained("themes/REDEXP", "RedmondExperience");
+    test_theme_selfcontained("themes/RED11", "Redmond-11");
     test_theme_win11();
-    test_theme_selfcontained("themes/OS9", "Cupertino Platinum");
-    test_theme_selfcontained("themes/OSX", "Cupertino Aqua");
+    test_theme_selfcontained("themes/CUPPLAT", "Cupertino Platinum");
+    test_theme_selfcontained("themes/CUPAQUA", "Cupertino Aqua");
     test_text_back();
     test_theme_syscolors();
     test_theme_bitmap();
     test_layout();
     test_glyphs();
-    golden("themes/WIN95", "win95");
-    golden("themes/WIN98", "win98");
+    golden("themes/RED95", "red95");
+    golden("themes/RED98", "red98");
     golden("themes/SLATE", "slate");
-    golden("themes/WINXP", "winxp");
-    golden_ex("themes/WIN11", "win11", 1);
-    golden_ex("themes/OS9", "os9", 1);
-    golden_ex("themes/OSX", "osx", 1);
+    golden("themes/REDEXP", "redexp");
+    golden_ex("themes/RED11", "red11", 1);
+    golden_ex("themes/CUPPLAT", "cupplat", 1);
+    golden_ex("themes/CUPAQUA", "cupaqua", 1);
     golden("host/tests/data/BMPTEST", "bmptest");
     printf("%d checks, %d failures%s\n", checks, failures, update_golden ? " (golden images updated)" : "");
     return failures ? 1 : 0;

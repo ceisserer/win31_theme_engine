@@ -178,7 +178,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--theme", default="WIN95")
+    ap.add_argument("--theme", default="RED95")
     ap.add_argument("--no-engine", action="store_true")
     ap.add_argument("--no-gallery", action="store_true")
     ap.add_argument("--gallery", help="start GALLERY.EXE with these arguments")

@@ -22,11 +22,11 @@ asks for the directory (default C:\RETHEME) and the theme, and can:
 
 Silent installation (for scripts and network installs):
 
-  SETUP /S [/D=C:\RETHEME] [/T=WIN95] [/NOLOAD] [/NOGROUP] [/NOSTART]
+  SETUP /S [/D=C:\RETHEME] [/T=RED95] [/NOLOAD] [/NOGROUP] [/NOSTART]
 
   /D=dir      installation directory
-  /T=theme    theme directory name: WIN95, WIN98, WINME, WINXP, WIN11,
-              OS9, OSX or SLATE
+  /T=theme    theme directory name: RED95, RED98, REDME, REDEXP, RED11,
+              CUPPLAT, CUPAQUA or SLATE
   /NOLOAD     do not start Retheme16 with Windows
   /NOGROUP    no Program Manager group
   /NOSTART    do not start Retheme16 after installing
@@ -43,7 +43,7 @@ a preview of each theme and switches at once. The theme is kept in
 RETHEME.INI:
 
   [Engine]
-  Theme=C:\RETHEME\THEMES\WIN95
+  Theme=C:\RETHEME\THEMES\RED95
 
 The Theme Gallery (GALLERY.EXE) shows dialogs, menus and window styles
 for trying a theme. Problems are reported in RETHEME.LOG.
@@ -58,9 +58,9 @@ Program Manager group.
 
 THEMES
 
-  WIN95   Redmond 95 (default)
-  WIN98   Redmond 98 (gradient title bars)
-  WINME   Redmond ME (beige, gradient title bars; best with 256 colours)
+  RED95   Redmond 95 (default)
+  RED98   Redmond 98 (gradient title bars)
+  REDME   Redmond ME (beige, gradient title bars; best with 256 colours)
   SLATE   a dark example theme made of bitmaps
 
 How to write themes: docs/THEME_FORMAT.md in the source code.

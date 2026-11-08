@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Generates the bitmaps of themes/WINXP, "RedmondExperience" (original
-artwork in the style of the Windows XP "Luna" look; public domain).
+"""Generates the bitmaps of themes/REDEXP, "RedmondExperience" (original
+artwork in a blue, rounded style; public domain).
 
 Everything is drawn procedurally at 4x and scaled down, so rounded shapes get
 anti-aliased edges. Edge pixels are blended with the colour the part sits on
@@ -13,17 +13,17 @@ Writes 24-bpp Windows 3.x DIBs (bottom-up, BI_RGB): exact colours on
 high-colour displays (the look this theme is made for); GDI maps them to the
 nearest colours on 256- and 16-colour displays.
 
-  python3 tools/gen_winxp.py             writes themes/WINXP/*.BMP
+  python3 tools/gen_redexp.py             writes themes/REDEXP/*.BMP
 """
 import os
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "WINXP")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "REDEXP")
 KEY = (255, 0, 255)
 CORNER = (255, 255, 0)
 S = 4  # supersampling factor
 
-# ---- palette (Luna blue) ----
+# ---- palette (blue) ----
 FACE = (236, 233, 216)          # BtnFace
 CAP_ACT = (0, 84, 227)
 CAP_INACT = (122, 150, 223)
@@ -151,7 +151,7 @@ def save(im, name):
 # ---- caption band: 1 x 22 strips, active and inactive ----
 
 def caption_profile(base, light, dark, n=22):
-    """Luna caption: bright top edge, a light band, the body, a darker foot."""
+    """The caption: bright top edge, a light band, the body, a darker foot."""
     return grad([(0.00, mix(light, (255, 255, 255), 0.25)),
                  (0.06, light),
                  (0.20, mix(base, light, 0.45)),

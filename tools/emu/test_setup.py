@@ -8,7 +8,7 @@
      WIN.INI entries and group are gone
 
   test_setup.py --base IMG [--floppy build/release/retheme16-X.Y.Z-disk.img]
-                [--out DIR] [--theme WIN98]
+                [--out DIR] [--theme RED98]
 
 Screenshots of every stage go to DIR (default build/emu/setup). Exit
 code 1 if a check fails. Needs `make release` (tools/release/mkrelease.py).
@@ -61,7 +61,7 @@ def main():
     ap.add_argument("--base", required=True)
     ap.add_argument("--floppy")
     ap.add_argument("--out", default=os.path.join(ROOT, "build", "emu", "setup"))
-    ap.add_argument("--theme", default="WIN98")
+    ap.add_argument("--theme", default="RED98")
     a = ap.parse_args()
     floppy = a.floppy or (sorted(glob.glob(os.path.join(ROOT, "build", "release", "retheme16-*-disk.img"))) or
                           [None])[-1]

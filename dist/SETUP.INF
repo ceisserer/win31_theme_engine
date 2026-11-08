@@ -13,7 +13,7 @@ WelcomeInstalled=Retheme16 %VERSION% is installed in %DIR%.\n\nChoose a theme an
 [Choice]
 Label=T&heme:
 Switch=T
-Default=WIN95
+Default=RED95
 NameFrom=THEMES\%ITEM%\THEME.INI,Theme,Name
 Preview=THEMES\%ITEM%\PREVIEW.BMP
 @THEMES@

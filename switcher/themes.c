@@ -118,8 +118,8 @@ static int fill_list(HWND list)
     struct find_t ff;
     char pattern[160], path[200], name[64], cur[160], *base;
     int i, n, sel = -1;
-    /* the loader's default: THEMES\WIN95 */
-    GetPrivateProfileString("Engine", "Theme", "WIN95", cur, sizeof(cur), ini);
+    /* the loader's default: THEMES\RED95 */
+    GetPrivateProfileString("Engine", "Theme", "RED95", cur, sizeof(cur), ini);
     base = strrchr(cur, '\\');
     base = base ? base + 1 : cur;
     wsprintf(pattern, "%sTHEMES\\*.*", (LPSTR)home);

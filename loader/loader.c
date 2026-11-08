@@ -5,7 +5,7 @@
  *   RETHEME [theme-directory]
  *
  * Without an argument the theme comes from RETHEME.INI ([Engine] Theme=),
- * default THEMES\WIN95 next to the executable. The program shows as an
+ * default THEMES\RED95 next to the executable. The program shows as an
  * icon; closing it unloads the engine.
  */
 #include <windows.h>
@@ -116,7 +116,7 @@ int PASCAL WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)
     } else {
         char def[160];
         lstrcpy(def, home);
-        lstrcat(def, "THEMES\\WIN95");
+        lstrcat(def, "THEMES\\RED95");
         GetPrivateProfileString("Engine", "Theme", def, theme, sizeof(theme), ini);
     }
 

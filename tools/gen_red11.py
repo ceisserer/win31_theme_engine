@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
-"""Generates the bitmaps of themes/WIN11, "Redmond-11" (original artwork in
-the style of the Windows 11 light look; public domain).
+"""Generates the bitmaps of themes/RED11, "Redmond-11" (original artwork in
+a light, flat style; public domain).
 
-Everything is drawn at 4x and scaled down (the Canvas of gen_winxp.py), so
+Everything is drawn at 4x and scaled down (the Canvas of gen_redexp.py), so
 rounded shapes get anti-aliased edges. Edge pixels are blended with the
 colour the part sits on (the caption for caption buttons, the dialog face for
 controls, the menu for menu highlights); fully transparent pixels become the
 colour key magenta (255,0,255), and the corners of the window frame become
 yellow (255,255,0), which THEME.INI recolours to the desktop colour.
 
-Writes 24-bpp Windows 3.x DIBs (bottom-up, BI_RGB), like gen_winxp.py.
+Writes 24-bpp Windows 3.x DIBs (bottom-up, BI_RGB), like gen_redexp.py.
 
-  python3 tools/gen_win11.py             writes themes/WIN11/*.BMP
+  python3 tools/gen_red11.py             writes themes/RED11/*.BMP
 """
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_winxp import Canvas, KEY, CORNER, mix, strip, rows  # noqa: E402
-import gen_winxp  # noqa: E402
+from gen_redexp import Canvas, KEY, CORNER, mix, strip, rows  # noqa: E402
+import gen_redexp  # noqa: E402
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "WIN11")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "RED11")
 
-# ---- palette (Windows 11, light) ----
-# keep in sync with [SysColors] / [Colors] in themes/WIN11/THEME.INI
+# ---- palette (light) ----
+# keep in sync with [SysColors] / [Colors] in themes/RED11/THEME.INI
 FACE = (243, 243, 243)          # BtnFace: dialogs
 CAP_ACT = (238, 242, 248)       # ActiveCaption: the light, slightly blue "Mica" bar
 CAP_INACT = (249, 249, 249)     # InactiveCaption
@@ -52,7 +52,7 @@ def frame(fill, outer):
     return c.render(DESKTOP, key=CORNER)
 
 
-# ---- caption buttons: 28x18 cells, flat like Windows 11 ----
+# ---- caption buttons: 28x18 cells, flat ----
 
 BW, BH = 28, 18
 
@@ -159,7 +159,7 @@ def radiocell(state, dot):
         return c.render(FACE)
     ring = {"pressed": ACCENT_PRESSED, "disabled": (200, 200, 200)}.get(state, ACCENT)
     c.ellipse(0, 0, 12, 12, ring)
-    # Windows 11: a white dot in the accent ring, smaller while pressed
+    # a white dot in the accent ring, smaller while pressed
     r = 2 if state == "pressed" else 3
     c.ellipse(6 - r, 6 - r, 6 + r, 6 + r, (255, 255, 255))
     return c.render(FACE)
@@ -194,14 +194,14 @@ def misc():
 
 
 def main():
-    gen_winxp.OUT = OUT
+    gen_redexp.OUT = OUT
     os.makedirs(OUT, exist_ok=True)
     fr = strip([frame(CAP_ACT, (112, 112, 112)), frame(CAP_INACT, (170, 170, 170))])
-    gen_winxp.save(fr, "FRAME.BMP")
-    gen_winxp.save(capbtns(), "CAPBTN.BMP")
-    gen_winxp.save(pushbtns(), "BUTTON.BMP")
-    gen_winxp.save(checks(), "CHECKS.BMP")
-    gen_winxp.save(misc(), "MISC.BMP")
+    gen_redexp.save(fr, "FRAME.BMP")
+    gen_redexp.save(capbtns(), "CAPBTN.BMP")
+    gen_redexp.save(pushbtns(), "BUTTON.BMP")
+    gen_redexp.save(checks(), "CHECKS.BMP")
+    gen_redexp.save(misc(), "MISC.BMP")
 
 
 if __name__ == "__main__":

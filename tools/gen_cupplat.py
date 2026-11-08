@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
-"""Generates the bitmaps of themes/OS9, "Cupertino Platinum" (original
-artwork in the style of the grey "Platinum" look of the classic Macintosh
-system of the late 1990s; public domain).
+"""Generates the bitmaps of themes/CUPPLAT, "Cupertino Platinum" (original
+artwork in a grey, bevelled style; public domain).
 
-Drawn with the supersampled Canvas of gen_winxp.py: edge pixels are blended
+Drawn with the supersampled Canvas of gen_redexp.py: edge pixels are blended
 with the colour the part sits on, fully transparent pixels become the colour
 key magenta (255,0,255).
 
-  python3 tools/gen_os9.py               writes themes/OS9/*.BMP
+  python3 tools/gen_cupplat.py               writes themes/CUPPLAT/*.BMP
 """
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_winxp import Canvas, mix, strip, rows  # noqa: E402
+from gen_redexp import Canvas, mix, strip, rows  # noqa: E402
 from PIL import Image  # noqa: E402
-import gen_winxp  # noqa: E402
+import gen_redexp  # noqa: E402
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "OS9")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "themes", "CUPPLAT")
 
 # ---- palette (Platinum) ----
-# keep in sync with [SysColors] / [Colors] in themes/OS9/THEME.INI
+# keep in sync with [SysColors] / [Colors] in themes/CUPPLAT/THEME.INI
 FACE = (221, 221, 221)          # BtnFace, captions, menus
 WHITE = (255, 255, 255)
 LIGHT = (238, 238, 238)         # the lit half of a bevel
@@ -36,7 +35,7 @@ TRACK = (170, 170, 170)
 
 
 def save(im, name):
-    gen_winxp.save(im, name)
+    gen_redexp.save(im, name)
 
 
 # ---- window frame: 12x12 nine-grid cells (margins 4) ----
@@ -271,7 +270,7 @@ def scroll():
 
 
 def main():
-    gen_winxp.OUT = OUT
+    gen_redexp.OUT = OUT
     os.makedirs(OUT, exist_ok=True)
     save(strip([frame(True), frame(False)]), "FRAME.BMP")
     save(stripes(), "STRIPES.BMP")

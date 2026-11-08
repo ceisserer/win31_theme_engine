@@ -109,7 +109,7 @@ Every part has a fallback chain: *theme state → theme Normal state → `Base=`
 
 ### 3.1 On disk
 
-A theme is a directory with **8.3 names** (Win 3.x limitation), for example `C:\RETHEME\THEMES\WIN95\`:
+A theme is a directory with **8.3 names** (Win 3.x limitation), for example `C:\RETHEME\THEMES\RED95\`:
 
 ```
 THEME.INI        definition
@@ -323,7 +323,7 @@ testapp/          GALLERY.EXE: every control/window type in fixed, scriptable st
 host/             Linux build of the portable core: unit tests, trace replay, previewer
 tools/            themec (Python): lint, pack, dither, preview
                   emu/: QEMU / DOSBox-X automation, screenshot diff
-themes/           win95 (default), win98 (gradient caption), and original themes
+themes/           RED95 (default), RED98 (gradient caption), and original themes
 docs/             this plan, theme-authoring guide, profile format, test matrix
 ```
 

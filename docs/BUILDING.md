@@ -35,7 +35,7 @@ Releases (GitHub Releases) contain `retheme16-X.Y.Z.zip` and a 1.44 MB floppy im
 Manager group (optional) and starts the engine. Run it again to change the theme or to remove Retheme16.
 
 ```
-SETUP /S [/D=C:\RETHEME] [/T=WIN95] [/NOLOAD] [/NOGROUP] [/NOSTART]    silent install
+SETUP /S [/D=C:\RETHEME] [/T=RED95] [/NOLOAD] [/NOGROUP] [/NOSTART]    silent install
 SETUP /U [/S]                                                         remove
 ```
 
@@ -48,7 +48,7 @@ engine and restores the Windows 3.1 look. Diagnostics go to `RETHEME.LOG`. The t
 
 ```ini
 [Engine]
-Theme=C:\RETHEME\THEMES\WIN95
+Theme=C:\RETHEME\THEMES\RED95
 ```
 
 Requirements: Windows 3.1 or Windows for Workgroups 3.11 in Standard or 386 Enhanced mode.
